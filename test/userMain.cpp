@@ -14,7 +14,8 @@
 
 void userMain()
 {
-    //__asm__ volatile("csrr a0, sstatus");
+    //__asm__ volatile("csrr a0, sstatus"); // test for changing privilege
+
     Threads_C_API_test(); // zadatak 2., niti C API i sinhrona promena konteksta
     //Threads_CPP_API_test(); // zadatak 2., niti CPP API i sinhrona promena konteksta
 

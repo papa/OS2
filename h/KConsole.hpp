@@ -38,7 +38,7 @@ private:
 
     static void getCharHandler();
 
-    static void getCharactersFromConsole(void* p);
+    static void getCharactersFromConsole();
 
     static void sendCharactersToConsole(void* p);
 
@@ -52,7 +52,7 @@ private:
     static void getcHandler();
 
     static void trapPrintString(const char* string);
-    static void printInt(int xx, int base=10, int sgn=0);
+    static void trapPrintInt(int xx, int base=10, int sgn=0);
 
     friend class PCB;
     friend class Scheduler;

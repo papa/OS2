@@ -25,33 +25,21 @@ void KConsole::initialize()
 //extern const uint64 CONSOLE_STATUS;
 //extern const uint64 CONSOLE_TX_DATA;
 //extern const uint64 CONSOLE_RX_DATA;
-//todo
-void KConsole::getCharactersFromConsole(void* p)
+void KConsole::getCharactersFromConsole()
 {
-    while(true)
+    uint64 operation = *(uint8*)CONSOLE_STATUS;
+    if(operation & KConsole::STATUS_READ_MASK)
     {
-        uint64 x = CONSOLE_STATUS;
-        __asm__ volatile("mv a0, %0"::"r"(x));
-        __asm__ volatile("lb a1, 0(a0)");
-        uint64 operation;
-        __asm__ volatile("mv %0, a1" :  "=r"(operation));
-        if(operation & STATUS_READ_MASK)
+        char c = *(uint8*)CONSOLE_TX_DATA;
+        if(KConsole::pendingGetc > 0)
         {
-            x = CONSOLE_TX_DATA;
-            __asm__ volatile("mv a0, %0"::"r"(x));
-            __asm__ volatile("lb a1,0(a0)");
-            char c;
-            __asm__ volatile("mv %0, a1" :  "=r"(c));
-
-            putCharacterInput(c);
-            putCharacterOutput(c);
+            KConsole::pendingGetc--;
+            KConsole::putCharacterInput(c);
+            //KConsole::putCharacterOutput(c);
         }
-        else
-            break;
     }
 }
 
-//todo
 void KConsole::sendCharactersToConsole(void* p)
 {
     while(true)
@@ -59,19 +47,12 @@ void KConsole::sendCharactersToConsole(void* p)
             if(Riscv::finishSystem && KConsole::outputBufferEmpty() && pendingGetc == 0)
                 thread_exit();
 
-            uint64 x = CONSOLE_STATUS;
-            __asm__ volatile("mv a0, %0"::"r"(x));
-            __asm__ volatile("lb a1, 0(a0)");
-            uint64 operation;
-            __asm__ volatile("mv %0, a1" :  "=r"(operation));
+            uint64 operation = *(uint8*)CONSOLE_STATUS;
             if ((operation & STATUS_WRITE_MASK) && pendingPutc > 0)
             {
                 char volatile c = sysCallGetCharOutput();
                 pendingPutc--;
-                x = CONSOLE_RX_DATA;
-                __asm__ volatile("mv a0, %0"::"r"(x));
-                __asm__ volatile("mv a1, %0" :  :"r"((uint64)c));
-                __asm__ volatile("sb a1,0(a0)");
+                *(uint8*)CONSOLE_RX_DATA = c;
             }
             else
             {
@@ -166,7 +147,7 @@ void KConsole::trapPrintString(const char *string)
     }
 }
 
-void KConsole::printInt(int xx, int base, int sgn)
+void KConsole::trapPrintInt(int xx, int base, int sgn)
 {
     char digits[] = "0123456789ABCDEF";
     char buf[16];

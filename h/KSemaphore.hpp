@@ -10,7 +10,7 @@
 class KSemaphore
 {
 private:
-    KSemaphore(int val = 0);
+    explicit KSemaphore(int val = 0);
     ~KSemaphore();
 
     uint64 wait();
@@ -32,7 +32,7 @@ private:
     static void semSignalHandler();
     static void semCloseHandler();
 
-    int val, beginVal;
+    int val;
 
     void block();
     void unblock();

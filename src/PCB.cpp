@@ -30,11 +30,6 @@ PCB::PCB(Body body, void *args, void* stack_space, uint64 timeSlice) :
     nextPCB = 0;
 }
 
-void PCB::sleep(time_t time)
-{
-    //todo
-}
-
 void PCB::start()
 {
     Scheduler::put(this);
@@ -42,25 +37,19 @@ void PCB::start()
 
 void PCB::runner()
 {
-    //trapPrintString("Runner started...\n");
     Riscv::popSppSpie();
-
     running->body(running->args);
-
-    //printString("Runner ended...\n");
 
     thread_exit();
 }
 
 void PCB::dispatch()
 {
-    //trapPrintString("Dispatch called...\n");
     PCB* old = running;
     if(old->getState() == PCB::RUNNING)
         Scheduler::put(old);
     PCB::running = Scheduler::get();
     PCB::running->setState(PCB::RUNNING);
-    //trapPrintString("Switching context...\n");
 
     Riscv::changePrivMode();
 
@@ -100,7 +89,6 @@ bool PCB::isFinished()
 
 void PCB::threadExitHandler()
 {
-    //trapPrintString("Exiting thread...\n");
     PCB::timeSliceCounter = 0;
     PCB::running->setState(PCB::FINISHED);
     PCB::dispatch();

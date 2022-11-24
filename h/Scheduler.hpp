@@ -18,8 +18,8 @@ private:
     void* operator new(size_t size);
     void operator delete(void *p);
 
+    //helper functions, can be deleted
     static int getSize();
-
     static void print();
 
     static PCB* schedulerPCBHead;

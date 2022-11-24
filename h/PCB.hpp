@@ -19,7 +19,6 @@ private:
 
     void start();
     static void dispatch();
-    static void sleep(time_t);
 
     static PCB* running;
 
@@ -48,8 +47,6 @@ private:
     static void initialize();
 
     bool isFinished();
-    //next PCB in sleeping queue
-    //or suspended queue
     PCB* nextPCB;
 
     static void threadCreateHandler();
@@ -81,13 +78,11 @@ private:
     static void runner();
 
     Body body;
-
     void* args;
 
     void* beginSP;
 
     State state;
-
     Context context;
 
     bool retFromClosedSem = false;

@@ -4,7 +4,7 @@
 
 #include "../h/Scheduler.hpp"
 #include "../h/PCB.hpp"
-#include "../test/printing.hpp"
+#include "../h/KConsole.hpp"
 
 PCB* Scheduler::schedulerPCBHead = 0;
 PCB* Scheduler::schedulerPCBTail = 0;
@@ -57,15 +57,14 @@ PCB *Scheduler::get()
     return retval;
 }
 
-//todo delete maybe
 void Scheduler::print()
 {
     //trapPrintString("Scheduler print\n");
     PCB* curr = schedulerPCBHead;
     while(curr != 0)
     {
-        printInt((uint64)curr, 16);
-        printString("\n");
+        KConsole::trapPrintInt((uint64)curr, 16);
+        KConsole::trapPrintString("\n");
         curr = curr->nextPCB;
     }
 }

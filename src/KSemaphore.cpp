@@ -9,7 +9,7 @@
 
 KSemaphore::KSemaphore(int val)
 {
-    this->val = this->beginVal = val;
+    this->val = val;
     headBlocked = tailBlocked = 0;
 }
 

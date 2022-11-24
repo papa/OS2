@@ -1,7 +1,3 @@
-//
-// Created by os on 5/11/22.
-//
-
 #include "../h/SleepPCBList.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/Riscv.hpp"

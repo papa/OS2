@@ -27,8 +27,6 @@ private:
 
     static void disableInterrupts();
 
-    static void idleRiscv(void* arg);
-
     static void pushRegisters();
     static void popRegisters();
 
