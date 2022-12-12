@@ -1,0 +1,627 @@
+GAS LISTING /tmp/cc0katCF.s 			page 1
+
+
+   1              		.file	"SleepPCBList.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN12SleepPCBList17insertSleepingPCBEv
+   9              	_ZN12SleepPCBList17insertSleepingPCBEv:
+  10              	.LFB25:
+  11              		.file 1 "src/SleepPCBList.cpp"
+   1:src/SleepPCBList.cpp **** #include "../h/SleepPCBList.hpp"
+   2:src/SleepPCBList.cpp **** #include "../h/Scheduler.hpp"
+   3:src/SleepPCBList.cpp **** #include "../h/Riscv.hpp"
+   4:src/SleepPCBList.cpp **** 
+   5:src/SleepPCBList.cpp **** PCB* SleepPCBList::sleepingPCBHead = 0;
+   6:src/SleepPCBList.cpp **** 
+   7:src/SleepPCBList.cpp **** void SleepPCBList::insertSleepingPCB()
+   8:src/SleepPCBList.cpp **** {
+  12              		.loc 1 8 1
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23348100 		sd	s0,8(sp)
+  17              		.cfi_offset 8, -8
+  18 0008 13040101 		addi	s0,sp,16
+  19              		.cfi_def_cfa 8, 0
+   9:src/SleepPCBList.cpp ****     PCB::running->setState(PCB::SLEEPING);
+  20              		.loc 1 9 5
+  21              		.loc 1 9 27 is_stmt 0
+  22 000c 97070000 		la	a5,_ZN3PCB7runningE
+  22      83B70700 
+  23 0014 03B60700 		ld	a2,0(a5)
+  24              	.LVL0:
+  25              	.LBB11:
+  26              	.LBB12:
+  27              		.file 2 "src/../h/PCB.hpp"
+   1:src/../h/PCB.hpp **** //
+   2:src/../h/PCB.hpp **** // Created by os on 4/27/22.
+   3:src/../h/PCB.hpp **** //
+   4:src/../h/PCB.hpp **** 
+   5:src/../h/PCB.hpp **** #ifndef PROJECT_BASE_V1_0_PCB_HPP
+   6:src/../h/PCB.hpp **** #define PROJECT_BASE_V1_0_PCB_HPP
+   7:src/../h/PCB.hpp **** 
+   8:src/../h/PCB.hpp **** #include "../lib/hw.h"
+   9:src/../h/PCB.hpp **** 
+  10:src/../h/PCB.hpp **** class PCB
+  11:src/../h/PCB.hpp **** {
+  12:src/../h/PCB.hpp **** private:
+  13:src/../h/PCB.hpp ****     static uint64 savedRegA4;
+  14:src/../h/PCB.hpp **** 
+  15:src/../h/PCB.hpp ****     using Body = void (*)(void*);
+  16:src/../h/PCB.hpp **** 
+  17:src/../h/PCB.hpp ****     PCB(Body body,  void* args, void* stack_space, uint64 timeSlice);
+  18:src/../h/PCB.hpp ****     ~PCB();
+  19:src/../h/PCB.hpp **** 
+  20:src/../h/PCB.hpp ****     void start();
+  21:src/../h/PCB.hpp ****     static void dispatch();
+GAS LISTING /tmp/cc0katCF.s 			page 2
+
+
+  22:src/../h/PCB.hpp **** 
+  23:src/../h/PCB.hpp ****     static PCB* running;
+  24:src/../h/PCB.hpp **** 
+  25:src/../h/PCB.hpp ****     static uint64 timeSliceCounter;
+  26:src/../h/PCB.hpp ****     uint64 getTimeSlice() { return timeSlice;}
+  27:src/../h/PCB.hpp **** 
+  28:src/../h/PCB.hpp ****     void* operator new(size_t size);
+  29:src/../h/PCB.hpp ****     void operator delete(void *p);
+  30:src/../h/PCB.hpp **** 
+  31:src/../h/PCB.hpp ****     enum State{READY, RUNNING, SUSPENDED, FINISHED, EXITING, SLEEPING};
+  32:src/../h/PCB.hpp ****     State getState() {return state;}
+  33:src/../h/PCB.hpp ****     void setState(State s) {state = s;}
+  28              		.loc 2 33 29 is_stmt 1
+  29              		.loc 2 33 35 is_stmt 0
+  30 0018 93075000 		li	a5,5
+  31 001c 2320F604 		sw	a5,64(a2)
+  32              	.LVL1:
+  33              	.LBE12:
+  34              	.LBE11:
+  10:src/SleepPCBList.cpp ****     PCB* prev = 0;
+  35              		.loc 1 10 5 is_stmt 1
+  11:src/SleepPCBList.cpp ****     PCB* curr = sleepingPCBHead;
+  36              		.loc 1 11 5
+  37              		.loc 1 11 10 is_stmt 0
+  38 0020 97070000 		ld	a5,.LANCHOR0
+  38      83B70700 
+  39              	.LVL2:
+  10:src/SleepPCBList.cpp ****     PCB* prev = 0;
+  40              		.loc 1 10 10
+  41 0028 93050000 		li	a1,0
+  42              	.LVL3:
+  43              	.L4:
+  12:src/SleepPCBList.cpp ****     while(curr != 0)
+  44              		.loc 1 12 5 is_stmt 1
+  45              		.loc 1 12 16
+  46 002c 63800702 		beqz	a5,.L2
+  13:src/SleepPCBList.cpp ****     {
+  14:src/SleepPCBList.cpp ****         if(PCB::running->getTimeToSleep() < curr->getTimeToSleep())
+  47              		.loc 1 14 9
+  48              	.LVL4:
+  49              	.LBB13:
+  50              	.LBB14:
+  34:src/../h/PCB.hpp ****     void setTimeToSleep(uint64 time) {timeToSleep = time;}
+  35:src/../h/PCB.hpp ****     uint64 getTimeToSleep() {return timeToSleep;}
+  51              		.loc 2 35 30
+  52              		.loc 2 35 37 is_stmt 0
+  53 0030 83360602 		ld	a3,32(a2)
+  54              	.LVL5:
+  55              	.LBE14:
+  56              	.LBE13:
+  57              	.LBB15:
+  58              	.LBB16:
+  59              		.loc 2 35 30 is_stmt 1
+  60              		.loc 2 35 37 is_stmt 0
+  61 0034 03B70702 		ld	a4,32(a5)
+  62              	.LVL6:
+  63              	.LBE16:
+GAS LISTING /tmp/cc0katCF.s 			page 3
+
+
+  64              	.LBE15:
+  65              		.loc 1 14 9
+  66 0038 63E8E600 		bltu	a3,a4,.L8
+  15:src/SleepPCBList.cpp ****         {
+  16:src/SleepPCBList.cpp ****             PCB::running->nextPCB = curr;
+  17:src/SleepPCBList.cpp ****             break;
+  18:src/SleepPCBList.cpp ****         }
+  19:src/SleepPCBList.cpp ****         prev = curr;
+  67              		.loc 1 19 9 is_stmt 1
+  68              	.LVL7:
+  20:src/SleepPCBList.cpp ****         curr=curr->nextPCB;
+  69              		.loc 1 20 9
+  19:src/SleepPCBList.cpp ****         curr=curr->nextPCB;
+  70              		.loc 1 19 14 is_stmt 0
+  71 003c 93850700 		mv	a1,a5
+  72              		.loc 1 20 13
+  73 0040 83B78700 		ld	a5,8(a5)
+  74              	.LVL8:
+  12:src/SleepPCBList.cpp ****     {
+  75              		.loc 1 12 5
+  76 0044 6FF09FFE 		j	.L4
+  77              	.L8:
+  16:src/SleepPCBList.cpp ****             break;
+  78              		.loc 1 16 13 is_stmt 1
+  16:src/SleepPCBList.cpp ****             break;
+  79              		.loc 1 16 35 is_stmt 0
+  80 0048 2334F600 		sd	a5,8(a2)
+  17:src/SleepPCBList.cpp ****         }
+  81              		.loc 1 17 13 is_stmt 1
+  82              	.L2:
+  21:src/SleepPCBList.cpp ****     }
+  22:src/SleepPCBList.cpp **** 
+  23:src/SleepPCBList.cpp ****     if(prev == 0)
+  83              		.loc 1 23 5
+  84 004c 638A0500 		beqz	a1,.L9
+  24:src/SleepPCBList.cpp ****         sleepingPCBHead = PCB::running;
+  25:src/SleepPCBList.cpp ****     else
+  26:src/SleepPCBList.cpp ****         prev->nextPCB = PCB::running;
+  85              		.loc 1 26 9
+  86              		.loc 1 26 23 is_stmt 0
+  87 0050 23B4C500 		sd	a2,8(a1)
+  88              	.LVL9:
+  89              	.L1:
+  27:src/SleepPCBList.cpp **** }
+  90              		.loc 1 27 1
+  91 0054 03348100 		ld	s0,8(sp)
+  92              		.cfi_remember_state
+  93              		.cfi_restore 8
+  94              		.cfi_def_cfa 2, 16
+  95 0058 13010101 		addi	sp,sp,16
+  96              		.cfi_def_cfa_offset 0
+  97 005c 67800000 		jr	ra
+  98              	.LVL10:
+  99              	.L9:
+ 100              		.cfi_restore_state
+  24:src/SleepPCBList.cpp ****         sleepingPCBHead = PCB::running;
+ 101              		.loc 1 24 9 is_stmt 1
+GAS LISTING /tmp/cc0katCF.s 			page 4
+
+
+  24:src/SleepPCBList.cpp ****         sleepingPCBHead = PCB::running;
+ 102              		.loc 1 24 25 is_stmt 0
+ 103 0060 97070000 		sd	a2,.LANCHOR0,a5
+ 103      23B0C700 
+ 104              	.LVL11:
+ 105 0068 6FF0DFFE 		j	.L1
+ 106              		.cfi_endproc
+ 107              	.LFE25:
+ 109              		.align	2
+ 110              		.globl	_ZN12SleepPCBList13tryToWakePCBsEv
+ 112              	_ZN12SleepPCBList13tryToWakePCBsEv:
+ 113              	.LFB26:
+  28:src/SleepPCBList.cpp **** 
+  29:src/SleepPCBList.cpp **** void SleepPCBList::tryToWakePCBs()
+  30:src/SleepPCBList.cpp **** {
+ 114              		.loc 1 30 1 is_stmt 1
+ 115              		.cfi_startproc
+  31:src/SleepPCBList.cpp ****     PCB* curr = sleepingPCBHead;
+ 116              		.loc 1 31 5
+ 117              		.loc 1 31 10 is_stmt 0
+ 118 006c 17050000 		ld	a0,.LANCHOR0
+ 118      03350500 
+ 119              	.LVL12:
+  32:src/SleepPCBList.cpp ****     if(curr == 0)
+ 120              		.loc 1 32 5 is_stmt 1
+ 121 0074 630E0506 		beqz	a0,.L14
+  33:src/SleepPCBList.cpp ****         return;
+  34:src/SleepPCBList.cpp **** 
+  35:src/SleepPCBList.cpp ****     while(curr != 0 && Riscv::totalTime >= curr->getTimeToSleep())
+ 122              		.loc 1 35 5
+ 123              		.loc 1 35 21
+ 124 0078 630C0506 		beqz	a0,.L14
+ 125              	.LVL13:
+ 126              	.LBB17:
+ 127              	.LBB18:
+ 128              		.loc 2 35 30
+ 129              		.loc 2 35 37 is_stmt 0
+ 130 007c 83370502 		ld	a5,32(a0)
+ 131              	.LVL14:
+ 132              	.LBE18:
+ 133              	.LBE17:
+ 134              		.loc 1 35 41
+ 135 0080 17070000 		la	a4,_ZN5Riscv9totalTimeE
+ 135      03370700 
+ 136 0088 03370700 		ld	a4,0(a4)
+ 137              		.loc 1 35 21
+ 138 008c 6362F706 		bltu	a4,a5,.L14
+  30:src/SleepPCBList.cpp ****     PCB* curr = sleepingPCBHead;
+ 139              		.loc 1 30 1
+ 140 0090 130101FE 		addi	sp,sp,-32
+ 141              		.cfi_def_cfa_offset 32
+ 142 0094 233C1100 		sd	ra,24(sp)
+ 143 0098 23388100 		sd	s0,16(sp)
+ 144 009c 23349100 		sd	s1,8(sp)
+ 145              		.cfi_offset 1, -8
+ 146              		.cfi_offset 8, -16
+ 147              		.cfi_offset 9, -24
+GAS LISTING /tmp/cc0katCF.s 			page 5
+
+
+ 148 00a0 13040102 		addi	s0,sp,32
+ 149              		.cfi_def_cfa 8, 0
+ 150 00a4 6F008001 		j	.L17
+ 151              	.LVL15:
+ 152              	.L19:
+ 153              	.LBB20:
+ 154              	.LBB19:
+ 155              		.loc 2 35 30 is_stmt 1
+ 156              		.loc 2 35 37 is_stmt 0
+ 157 00a8 83B70402 		ld	a5,32(s1)
+ 158              	.LVL16:
+ 159              	.LBE19:
+ 160              	.LBE20:
+ 161              		.loc 1 35 41
+ 162 00ac 17070000 		la	a4,_ZN5Riscv9totalTimeE
+ 162      03370700 
+ 163 00b4 03370700 		ld	a4,0(a4)
+ 164              		.loc 1 35 21
+ 165 00b8 6362F702 		bltu	a4,a5,.L10
+ 166              	.LVL17:
+ 167              	.L17:
+ 168              	.LBB21:
+  36:src/SleepPCBList.cpp ****     {
+  37:src/SleepPCBList.cpp ****         PCB *old = curr;
+ 169              		.loc 1 37 9 is_stmt 1
+  38:src/SleepPCBList.cpp ****         curr = curr->nextPCB;
+ 170              		.loc 1 38 9
+ 171              		.loc 1 38 14 is_stmt 0
+ 172 00bc 83348500 		ld	s1,8(a0)
+ 173              	.LVL18:
+  39:src/SleepPCBList.cpp ****         old->nextPCB = 0;
+ 174              		.loc 1 39 9 is_stmt 1
+ 175              		.loc 1 39 22 is_stmt 0
+ 176 00c0 23340500 		sd	zero,8(a0)
+  40:src/SleepPCBList.cpp ****         Scheduler::put(old);
+ 177              		.loc 1 40 9 is_stmt 1
+ 178              		.loc 1 40 23 is_stmt 0
+ 179 00c4 97000000 		call	_ZN9Scheduler3putEP3PCB@plt
+ 179      E7800000 
+ 180              	.LVL19:
+  41:src/SleepPCBList.cpp ****         sleepingPCBHead = curr;
+ 181              		.loc 1 41 9 is_stmt 1
+ 182              		.loc 1 41 25 is_stmt 0
+ 183 00cc 97070000 		sd	s1,.LANCHOR0,a5
+ 183      23B09700 
+  38:src/SleepPCBList.cpp ****         old->nextPCB = 0;
+ 184              		.loc 1 38 14
+ 185 00d4 13850400 		mv	a0,s1
+ 186              	.LBE21:
+  35:src/SleepPCBList.cpp ****     {
+ 187              		.loc 1 35 5 is_stmt 1
+  35:src/SleepPCBList.cpp ****     {
+ 188              		.loc 1 35 21
+ 189 00d8 E39804FC 		bnez	s1,.L19
+ 190              	.L10:
+  42:src/SleepPCBList.cpp ****     }
+  43:src/SleepPCBList.cpp **** }
+GAS LISTING /tmp/cc0katCF.s 			page 6
+
+
+ 191              		.loc 1 43 1 is_stmt 0
+ 192 00dc 83308101 		ld	ra,24(sp)
+ 193              		.cfi_restore 1
+ 194 00e0 03340101 		ld	s0,16(sp)
+ 195              		.cfi_restore 8
+ 196              		.cfi_def_cfa 2, 32
+ 197 00e4 83348100 		ld	s1,8(sp)
+ 198              		.cfi_restore 9
+ 199              	.LVL20:
+ 200 00e8 13010102 		addi	sp,sp,32
+ 201              		.cfi_def_cfa_offset 0
+ 202 00ec 67800000 		jr	ra
+ 203              	.L14:
+ 204 00f0 67800000 		ret
+ 205              		.cfi_endproc
+ 206              	.LFE26:
+ 208              		.globl	_ZN12SleepPCBList15sleepingPCBHeadE
+ 209              		.bss
+ 210              		.align	3
+ 211              		.set	.LANCHOR0,. + 0
+ 214              	_ZN12SleepPCBList15sleepingPCBHeadE:
+ 215 0000 00000000 		.zero	8
+ 215      00000000 
+ 216              		.text
+ 217              	.Letext0:
+ 218              		.file 3 "src/../h/../lib/hw.h"
+ 219              		.file 4 "src/../h/SleepPCBList.hpp"
+ 220              		.file 5 "src/../h/Scheduler.hpp"
+GAS LISTING /tmp/cc0katCF.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 SleepPCBList.cpp
+     /tmp/cc0katCF.s:9      .text:0000000000000000 _ZN12SleepPCBList17insertSleepingPCBEv
+     /tmp/cc0katCF.s:13     .text:0000000000000000 .L0 
+     /tmp/cc0katCF.s:14     .text:0000000000000000 .L0 
+     /tmp/cc0katCF.s:15     .text:0000000000000004 .L0 
+     /tmp/cc0katCF.s:17     .text:0000000000000008 .L0 
+     /tmp/cc0katCF.s:19     .text:000000000000000c .L0 
+     /tmp/cc0katCF.s:21     .text:000000000000000c .L0 
+     /tmp/cc0katCF.s:22     .text:000000000000000c .L0 
+     /tmp/cc0katCF.s:29     .text:0000000000000018 .L0 
+     /tmp/cc0katCF.s:30     .text:0000000000000018 .L0 
+     /tmp/cc0katCF.s:36     .text:0000000000000020 .L0 
+     /tmp/cc0katCF.s:37     .text:0000000000000020 .L0 
+     /tmp/cc0katCF.s:38     .text:0000000000000020 .L0 
+     /tmp/cc0katCF.s:41     .text:0000000000000028 .L0 
+     /tmp/cc0katCF.s:45     .text:000000000000002c .L0 
+     /tmp/cc0katCF.s:46     .text:000000000000002c .L0 
+     /tmp/cc0katCF.s:51     .text:0000000000000030 .L0 
+     /tmp/cc0katCF.s:52     .text:0000000000000030 .L0 
+     /tmp/cc0katCF.s:53     .text:0000000000000030 .L0 
+     /tmp/cc0katCF.s:60     .text:0000000000000034 .L0 
+     /tmp/cc0katCF.s:61     .text:0000000000000034 .L0 
+     /tmp/cc0katCF.s:66     .text:0000000000000038 .L0 
+     /tmp/cc0katCF.s:69     .text:000000000000003c .L0 
+     /tmp/cc0katCF.s:70     .text:000000000000003c .L0 
+     /tmp/cc0katCF.s:71     .text:000000000000003c .L0 
+     /tmp/cc0katCF.s:73     .text:0000000000000040 .L0 
+     /tmp/cc0katCF.s:76     .text:0000000000000044 .L0 
+     /tmp/cc0katCF.s:79     .text:0000000000000048 .L0 
+     /tmp/cc0katCF.s:80     .text:0000000000000048 .L0 
+     /tmp/cc0katCF.s:83     .text:000000000000004c .L0 
+     /tmp/cc0katCF.s:84     .text:000000000000004c .L0 
+     /tmp/cc0katCF.s:86     .text:0000000000000050 .L0 
+     /tmp/cc0katCF.s:87     .text:0000000000000050 .L0 
+     /tmp/cc0katCF.s:91     .text:0000000000000054 .L0 
+     /tmp/cc0katCF.s:92     .text:0000000000000058 .L0 
+     /tmp/cc0katCF.s:93     .text:0000000000000058 .L0 
+     /tmp/cc0katCF.s:94     .text:0000000000000058 .L0 
+     /tmp/cc0katCF.s:96     .text:000000000000005c .L0 
+     /tmp/cc0katCF.s:100    .text:0000000000000060 .L0 
+     /tmp/cc0katCF.s:102    .text:0000000000000060 .L0 
+     /tmp/cc0katCF.s:103    .text:0000000000000060 .L0 
+     /tmp/cc0katCF.s:106    .text:000000000000006c .L0 
+     /tmp/cc0katCF.s:112    .text:000000000000006c _ZN12SleepPCBList13tryToWakePCBsEv
+     /tmp/cc0katCF.s:115    .text:000000000000006c .L0 
+     /tmp/cc0katCF.s:116    .text:000000000000006c .L0 
+     /tmp/cc0katCF.s:117    .text:000000000000006c .L0 
+     /tmp/cc0katCF.s:118    .text:000000000000006c .L0 
+     /tmp/cc0katCF.s:121    .text:0000000000000074 .L0 
+     /tmp/cc0katCF.s:123    .text:0000000000000078 .L0 
+     /tmp/cc0katCF.s:124    .text:0000000000000078 .L0 
+     /tmp/cc0katCF.s:129    .text:000000000000007c .L0 
+     /tmp/cc0katCF.s:130    .text:000000000000007c .L0 
+     /tmp/cc0katCF.s:135    .text:0000000000000080 .L0 
+     /tmp/cc0katCF.s:138    .text:000000000000008c .L0 
+     /tmp/cc0katCF.s:140    .text:0000000000000090 .L0 
+GAS LISTING /tmp/cc0katCF.s 			page 8
+
+
+     /tmp/cc0katCF.s:141    .text:0000000000000094 .L0 
+     /tmp/cc0katCF.s:145    .text:00000000000000a0 .L0 
+     /tmp/cc0katCF.s:146    .text:00000000000000a0 .L0 
+     /tmp/cc0katCF.s:147    .text:00000000000000a0 .L0 
+     /tmp/cc0katCF.s:149    .text:00000000000000a4 .L0 
+     /tmp/cc0katCF.s:156    .text:00000000000000a8 .L0 
+     /tmp/cc0katCF.s:157    .text:00000000000000a8 .L0 
+     /tmp/cc0katCF.s:162    .text:00000000000000ac .L0 
+     /tmp/cc0katCF.s:165    .text:00000000000000b8 .L0 
+     /tmp/cc0katCF.s:170    .text:00000000000000bc .L0 
+     /tmp/cc0katCF.s:171    .text:00000000000000bc .L0 
+     /tmp/cc0katCF.s:172    .text:00000000000000bc .L0 
+     /tmp/cc0katCF.s:175    .text:00000000000000c0 .L0 
+     /tmp/cc0katCF.s:176    .text:00000000000000c0 .L0 
+     /tmp/cc0katCF.s:178    .text:00000000000000c4 .L0 
+     /tmp/cc0katCF.s:179    .text:00000000000000c4 .L0 
+     /tmp/cc0katCF.s:182    .text:00000000000000cc .L0 
+     /tmp/cc0katCF.s:183    .text:00000000000000cc .L0 
+     /tmp/cc0katCF.s:185    .text:00000000000000d4 .L0 
+     /tmp/cc0katCF.s:188    .text:00000000000000d8 .L0 
+     /tmp/cc0katCF.s:189    .text:00000000000000d8 .L0 
+     /tmp/cc0katCF.s:192    .text:00000000000000dc .L0 
+     /tmp/cc0katCF.s:193    .text:00000000000000e0 .L0 
+     /tmp/cc0katCF.s:195    .text:00000000000000e4 .L0 
+     /tmp/cc0katCF.s:196    .text:00000000000000e4 .L0 
+     /tmp/cc0katCF.s:198    .text:00000000000000e8 .L0 
+     /tmp/cc0katCF.s:201    .text:00000000000000ec .L0 
+     /tmp/cc0katCF.s:205    .text:00000000000000f4 .L0 
+     /tmp/cc0katCF.s:214    .bss:0000000000000000 _ZN12SleepPCBList15sleepingPCBHeadE
+     /tmp/cc0katCF.s:211    .bss:0000000000000000 .LANCHOR0
+     /tmp/cc0katCF.s:221    .text:00000000000000f4 .L0 
+     /tmp/cc0katCF.s:22     .text:000000000000000c .L0 
+     /tmp/cc0katCF.s:38     .text:0000000000000020 .L0 
+     /tmp/cc0katCF.s:103    .text:0000000000000060 .L0 
+     /tmp/cc0katCF.s:118    .text:000000000000006c .L0 
+     /tmp/cc0katCF.s:135    .text:0000000000000080 .L0 
+     /tmp/cc0katCF.s:162    .text:00000000000000ac .L0 
+     /tmp/cc0katCF.s:183    .text:00000000000000cc .L0 
+     /tmp/cc0katCF.s:82     .text:000000000000004c .L2
+     /tmp/cc0katCF.s:77     .text:0000000000000048 .L8
+     /tmp/cc0katCF.s:43     .text:000000000000002c .L4
+     /tmp/cc0katCF.s:99     .text:0000000000000060 .L9
+     /tmp/cc0katCF.s:89     .text:0000000000000054 .L1
+     /tmp/cc0katCF.s:203    .text:00000000000000f0 .L14
+     /tmp/cc0katCF.s:167    .text:00000000000000bc .L17
+     /tmp/cc0katCF.s:190    .text:00000000000000dc .L10
+     /tmp/cc0katCF.s:152    .text:00000000000000a8 .L19
+     /tmp/cc0katCF.s:1053   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc0katCF.s:2108   .debug_str:0000000000000657 .LASF111
+     /tmp/cc0katCF.s:1962   .debug_str:00000000000001c9 .LASF112
+     /tmp/cc0katCF.s:1990   .debug_str:00000000000002ab .LASF113
+     /tmp/cc0katCF.s:5      .text:0000000000000000 .Ltext0
+     /tmp/cc0katCF.s:217    .text:00000000000000f4 .Letext0
+     /tmp/cc0katCF.s:1906   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc0katCF.s:1998   .debug_str:00000000000002ea .LASF0
+     /tmp/cc0katCF.s:2014   .debug_str:000000000000035a .LASF1
+     /tmp/cc0katCF.s:2064   .debug_str:000000000000052a .LASF2
+GAS LISTING /tmp/cc0katCF.s 			page 9
+
+
+     /tmp/cc0katCF.s:2072   .debug_str:0000000000000559 .LASF4
+     /tmp/cc0katCF.s:2006   .debug_str:0000000000000323 .LASF3
+     /tmp/cc0katCF.s:1914   .debug_str:000000000000002f .LASF5
+     /tmp/cc0katCF.s:2052   .debug_str:00000000000004c1 .LASF6
+     /tmp/cc0katCF.s:2010   .debug_str:0000000000000342 .LASF7
+     /tmp/cc0katCF.s:1988   .debug_str:000000000000029b .LASF8
+     /tmp/cc0katCF.s:1994   .debug_str:00000000000002d6 .LASF9
+     /tmp/cc0katCF.s:1944   .debug_str:0000000000000149 .LASF10
+     /tmp/cc0katCF.s:1980   .debug_str:0000000000000266 .LASF11
+     /tmp/cc0katCF.s:1950   .debug_str:000000000000016b .LASF12
+     /tmp/cc0katCF.s:1942   .debug_str:0000000000000139 .LASF13
+     /tmp/cc0katCF.s:2096   .debug_str:0000000000000624 .LASF14
+     /tmp/cc0katCF.s:1972   .debug_str:0000000000000208 .LASF15
+     /tmp/cc0katCF.s:2090   .debug_str:00000000000005d2 .LASF16
+     /tmp/cc0katCF.s:2104   .debug_str:0000000000000649 .LASF114
+     /tmp/cc0katCF.s:2102   .debug_str:0000000000000643 .LASF17
+     /tmp/cc0katCF.s:2084   .debug_str:00000000000005b1 .LASF18
+     /tmp/cc0katCF.s:1948   .debug_str:0000000000000161 .LASF19
+     /tmp/cc0katCF.s:1932   .debug_str:00000000000000df .LASF20
+     /tmp/cc0katCF.s:2054   .debug_str:00000000000004d4 .LASF21
+     /tmp/cc0katCF.s:1946   .debug_str:0000000000000158 .LASF22
+     /tmp/cc0katCF.s:2098   .debug_str:0000000000000630 .LASF90
+     /tmp/cc0katCF.s:1996   .debug_str:00000000000002e4 .LASF23
+     /tmp/cc0katCF.s:1916   .debug_str:0000000000000036 .LASF29
+     /tmp/cc0katCF.s:2116   .debug_str:000000000000073d .LASF115
+     /tmp/cc0katCF.s:2044   .debug_str:000000000000047b .LASF24
+     /tmp/cc0katCF.s:2012   .debug_str:0000000000000355 .LASF25
+     /tmp/cc0katCF.s:2140   .debug_str:00000000000007e9 .LASF27
+     /tmp/cc0katCF.s:2134   .debug_str:00000000000007b9 .LASF26
+     /tmp/cc0katCF.s:2110   .debug_str:000000000000071b .LASF28
+     /tmp/cc0katCF.s:1964   .debug_str:00000000000001de .LASF52
+     /tmp/cc0katCF.s:1922   .debug_str:000000000000007c .LASF54
+     /tmp/cc0katCF.s:2106   .debug_str:000000000000064f .LASF30
+     /tmp/cc0katCF.s:2076   .debug_str:0000000000000568 .LASF31
+     /tmp/cc0katCF.s:2016   .debug_str:000000000000036d .LASF34
+     /tmp/cc0katCF.s:2018   .debug_str:000000000000037a .LASF36
+     /tmp/cc0katCF.s:2142   .debug_str:00000000000007f5 .LASF32
+     /tmp/cc0katCF.s:1974   .debug_str:000000000000021e .LASF33
+     /tmp/cc0katCF.s:1912   .debug_str:000000000000001f .LASF78
+     /tmp/cc0katCF.s:2004   .debug_str:0000000000000316 .LASF80
+     /tmp/cc0katCF.s:2080   .debug_str:000000000000058a .LASF35
+     /tmp/cc0katCF.s:2032   .debug_str:00000000000003e4 .LASF37
+     /tmp/cc0katCF.s:2070   .debug_str:0000000000000550 .LASF38
+     /tmp/cc0katCF.s:2094   .debug_str:0000000000000608 .LASF39
+     /tmp/cc0katCF.s:2034   .debug_str:00000000000003f7 .LASF40
+     /tmp/cc0katCF.s:1908   .debug_str:0000000000000000 .LASF41
+     /tmp/cc0katCF.s:2128   .debug_str:0000000000000791 .LASF42
+     /tmp/cc0katCF.s:2050   .debug_str:00000000000004a7 .LASF43
+     /tmp/cc0katCF.s:2088   .debug_str:00000000000005c4 .LASF44
+     /tmp/cc0katCF.s:2056   .debug_str:00000000000004dc .LASF45
+     /tmp/cc0katCF.s:1960   .debug_str:00000000000001b9 .LASF46
+     /tmp/cc0katCF.s:1982   .debug_str:0000000000000275 .LASF47
+     /tmp/cc0katCF.s:2060   .debug_str:0000000000000505 .LASF48
+     /tmp/cc0katCF.s:2022   .debug_str:000000000000039a .LASF49
+     /tmp/cc0katCF.s:2130   .debug_str:00000000000007a0 .LASF50
+     /tmp/cc0katCF.s:2008   .debug_str:0000000000000335 .LASF51
+     /tmp/cc0katCF.s:2086   .debug_str:00000000000005b9 .LASF53
+GAS LISTING /tmp/cc0katCF.s 			page 10
+
+
+     /tmp/cc0katCF.s:2138   .debug_str:00000000000007d3 .LASF55
+     /tmp/cc0katCF.s:2100   .debug_str:0000000000000638 .LASF56
+     /tmp/cc0katCF.s:1956   .debug_str:000000000000019e .LASF57
+     /tmp/cc0katCF.s:2074   .debug_str:0000000000000560 .LASF58
+     /tmp/cc0katCF.s:2000   .debug_str:00000000000002f7 .LASF59
+     /tmp/cc0katCF.s:2038   .debug_str:000000000000041c .LASF60
+     /tmp/cc0katCF.s:1954   .debug_str:000000000000018c .LASF61
+     /tmp/cc0katCF.s:2058   .debug_str:00000000000004e8 .LASF62
+     /tmp/cc0katCF.s:2146   .debug_str:0000000000000826 .LASF63
+     /tmp/cc0katCF.s:2040   .debug_str:000000000000043b .LASF64
+     /tmp/cc0katCF.s:2068   .debug_str:000000000000053d .LASF65
+     /tmp/cc0katCF.s:2082   .debug_str:0000000000000593 .LASF66
+     /tmp/cc0katCF.s:2122   .debug_str:000000000000076f .LASF67
+     /tmp/cc0katCF.s:2026   .debug_str:00000000000003ae .LASF68
+     /tmp/cc0katCF.s:2118   .debug_str:0000000000000755 .LASF69
+     /tmp/cc0katCF.s:2092   .debug_str:00000000000005e8 .LASF70
+     /tmp/cc0katCF.s:2048   .debug_str:0000000000000493 .LASF71
+     /tmp/cc0katCF.s:2042   .debug_str:000000000000045c .LASF72
+     /tmp/cc0katCF.s:1968   .debug_str:00000000000001ed .LASF73
+     /tmp/cc0katCF.s:2002   .debug_str:000000000000030b .LASF74
+     /tmp/cc0katCF.s:2028   .debug_str:00000000000003cc .LASF75
+     /tmp/cc0katCF.s:2112   .debug_str:000000000000072b .LASF76
+     /tmp/cc0katCF.s:1984   .debug_str:0000000000000285 .LASF77
+     /tmp/cc0katCF.s:2132   .debug_str:00000000000007ab .LASF79
+     /tmp/cc0katCF.s:1926   .debug_str:0000000000000094 .LASF81
+     /tmp/cc0katCF.s:1976   .debug_str:000000000000022a .LASF82
+     /tmp/cc0katCF.s:1940   .debug_str:000000000000010d .LASF83
+     /tmp/cc0katCF.s:2126   .debug_str:000000000000078a .LASF84
+     /tmp/cc0katCF.s:1938   .debug_str:00000000000000fc .LASF85
+     /tmp/cc0katCF.s:1910   .debug_str:000000000000001a .LASF86
+     /tmp/cc0katCF.s:2120   .debug_str:000000000000076a .LASF87
+     /tmp/cc0katCF.s:2020   .debug_str:0000000000000392 .LASF88
+     /tmp/cc0katCF.s:1966   .debug_str:00000000000001e7 .LASF89
+     /tmp/cc0katCF.s:2114   .debug_str:0000000000000735 .LASF91
+     /tmp/cc0katCF.s:1928   .debug_str:00000000000000bc .LASF92
+     /tmp/cc0katCF.s:2024   .debug_str:00000000000003a9 .LASF93
+     /tmp/cc0katCF.s:1992   .debug_str:00000000000002c9 .LASF94
+     /tmp/cc0katCF.s:2030   .debug_str:00000000000003d4 .LASF95
+     /tmp/cc0katCF.s:1970   .debug_str:00000000000001f6 .LASF96
+     /tmp/cc0katCF.s:1978   .debug_str:000000000000023f .LASF97
+     /tmp/cc0katCF.s:1934   .debug_str:00000000000000e8 .LASF98
+     /tmp/cc0katCF.s:1920   .debug_str:0000000000000059 .LASF99
+     /tmp/cc0katCF.s:1986   .debug_str:0000000000000291 .LASF100
+     /tmp/cc0katCF.s:1918   .debug_str:0000000000000041 .LASF116
+     /tmp/cc0katCF.s:2136   .debug_str:00000000000007bf .LASF117
+     /tmp/cc0katCF.s:1930   .debug_str:00000000000000cd .LASF101
+     /tmp/cc0katCF.s:2046   .debug_str:0000000000000480 .LASF102
+     /tmp/cc0katCF.s:2124   .debug_str:0000000000000782 .LASF103
+     /tmp/cc0katCF.s:2062   .debug_str:0000000000000512 .LASF118
+     /tmp/cc0katCF.s:1936   .debug_str:00000000000000f6 .LASF104
+     /tmp/cc0katCF.s:2036   .debug_str:0000000000000406 .LASF105
+     /tmp/cc0katCF.s:2078   .debug_str:0000000000000579 .LASF106
+     /tmp/cc0katCF.s:1952   .debug_str:000000000000017b .LASF107
+     /tmp/cc0katCF.s:2144   .debug_str:0000000000000802 .LASF119
+     /tmp/cc0katCF.s:113    .text:000000000000006c .LFB26
+     /tmp/cc0katCF.s:206    .text:00000000000000f4 .LFE26
+     /tmp/cc0katCF.s:2066   .debug_str:0000000000000538 .LASF108
+GAS LISTING /tmp/cc0katCF.s 			page 11
+
+
+     /tmp/cc0katCF.s:1775   .debug_loc:0000000000000000 .LLST6
+     /tmp/cc0katCF.s:168    .text:00000000000000bc .LBB21
+     /tmp/cc0katCF.s:186    .text:00000000000000d8 .LBE21
+     /tmp/cc0katCF.s:1798   .debug_loc:000000000000006f .LLST8
+     /tmp/cc0katCF.s:180    .text:00000000000000cc .LVL19
+     /tmp/cc0katCF.s:126    .text:000000000000007c .LBB17
+     /tmp/cc0katCF.s:1898   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc0katCF.s:1805   .debug_loc:0000000000000092 .LLST7
+     /tmp/cc0katCF.s:10     .text:0000000000000000 .LFB25
+     /tmp/cc0katCF.s:107    .text:000000000000006c .LFE25
+     /tmp/cc0katCF.s:1924   .debug_str:000000000000008f .LASF109
+     /tmp/cc0katCF.s:1816   .debug_loc:00000000000000c8 .LLST0
+     /tmp/cc0katCF.s:1836   .debug_loc:0000000000000125 .LLST1
+     /tmp/cc0katCF.s:25     .text:0000000000000018 .LBB11
+     /tmp/cc0katCF.s:34     .text:0000000000000020 .LBE11
+     /tmp/cc0katCF.s:1856   .debug_loc:0000000000000182 .LLST2
+     /tmp/cc0katCF.s:1864   .debug_loc:00000000000001a6 .LLST3
+     /tmp/cc0katCF.s:49     .text:0000000000000030 .LBB13
+     /tmp/cc0katCF.s:56     .text:0000000000000034 .LBE13
+     /tmp/cc0katCF.s:1871   .debug_loc:00000000000001c9 .LLST4
+     /tmp/cc0katCF.s:57     .text:0000000000000034 .LBB15
+     /tmp/cc0katCF.s:64     .text:0000000000000038 .LBE15
+     /tmp/cc0katCF.s:1878   .debug_loc:00000000000001ec .LLST5
+     /tmp/cc0katCF.s:1958   .debug_str:00000000000001b4 .LASF110
+     /tmp/cc0katCF.s:119    .text:0000000000000074 .LVL12
+     /tmp/cc0katCF.s:151    .text:00000000000000a8 .LVL15
+     /tmp/cc0katCF.s:166    .text:00000000000000bc .LVL17
+     /tmp/cc0katCF.s:173    .text:00000000000000c0 .LVL18
+     /tmp/cc0katCF.s:199    .text:00000000000000e8 .LVL20
+     /tmp/cc0katCF.s:125    .text:000000000000007c .LVL13
+     /tmp/cc0katCF.s:131    .text:0000000000000080 .LVL14
+     /tmp/cc0katCF.s:158    .text:00000000000000ac .LVL16
+     /tmp/cc0katCF.s:32     .text:0000000000000020 .LVL1
+     /tmp/cc0katCF.s:42     .text:000000000000002c .LVL3
+     /tmp/cc0katCF.s:68     .text:000000000000003c .LVL7
+     /tmp/cc0katCF.s:74     .text:0000000000000044 .LVL8
+     /tmp/cc0katCF.s:39     .text:0000000000000028 .LVL2
+     /tmp/cc0katCF.s:88     .text:0000000000000054 .LVL9
+     /tmp/cc0katCF.s:98     .text:0000000000000060 .LVL10
+     /tmp/cc0katCF.s:104    .text:0000000000000068 .LVL11
+     /tmp/cc0katCF.s:24     .text:0000000000000018 .LVL0
+     /tmp/cc0katCF.s:48     .text:0000000000000030 .LVL4
+     /tmp/cc0katCF.s:54     .text:0000000000000034 .LVL5
+     /tmp/cc0katCF.s:62     .text:0000000000000038 .LVL6
+     /tmp/cc0katCF.s:222    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cc0katCF.s:133    .text:0000000000000080 .LBE17
+     /tmp/cc0katCF.s:153    .text:00000000000000a8 .LBB20
+     /tmp/cc0katCF.s:160    .text:00000000000000ac .LBE20
+
+UNDEFINED SYMBOLS
+_ZN3PCB7runningE
+_ZN5Riscv9totalTimeE
+_ZN9Scheduler3putEP3PCB

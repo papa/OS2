@@ -1,0 +1,117 @@
+GAS LISTING /tmp/ccFC5xS4.s 			page 1
+
+
+   1              		.file	"_sem.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN4_semdlEPv
+   9              	_ZN4_semdlEPv:
+  10              	.LFB0:
+  11              		.file 1 "src/_sem.cpp"
+   1:src/_sem.cpp  **** //
+   2:src/_sem.cpp  **** // Created by os on 6/3/22.
+   3:src/_sem.cpp  **** //
+   4:src/_sem.cpp  **** 
+   5:src/_sem.cpp  **** #include "../h/_sem.hpp"
+   6:src/_sem.cpp  **** #include "../h/syscall_c.hpp"
+   7:src/_sem.cpp  **** 
+   8:src/_sem.cpp  **** void _sem::operator delete(void *p) {
+  12              		.loc 1 8 37
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15 0000 130101FF 		addi	sp,sp,-16
+  16              		.cfi_def_cfa_offset 16
+  17 0004 23341100 		sd	ra,8(sp)
+  18 0008 23308100 		sd	s0,0(sp)
+  19              		.cfi_offset 1, -8
+  20              		.cfi_offset 8, -16
+  21 000c 13040101 		addi	s0,sp,16
+  22              		.cfi_def_cfa 8, 0
+   9:src/_sem.cpp  ****     sem_close((sem_t)p);
+  23              		.loc 1 9 5
+  24              		.loc 1 9 14 is_stmt 0
+  25 0010 97000000 		call	_Z9sem_closeP4_sem@plt
+  25      E7800000 
+  26              	.LVL1:
+  10:src/_sem.cpp  **** }
+  27              		.loc 1 10 1
+  28 0018 83308100 		ld	ra,8(sp)
+  29              		.cfi_restore 1
+  30 001c 03340100 		ld	s0,0(sp)
+  31              		.cfi_restore 8
+  32              		.cfi_def_cfa 2, 16
+  33 0020 13010101 		addi	sp,sp,16
+  34              		.cfi_def_cfa_offset 0
+  35 0024 67800000 		jr	ra
+  36              		.cfi_endproc
+  37              	.LFE0:
+  39              	.Letext0:
+  40              		.file 2 "src/../h/../lib/hw.h"
+  41              		.file 3 "src/../h/syscall_c.hpp"
+  42              		.file 4 "src/../h/_sem.hpp"
+GAS LISTING /tmp/ccFC5xS4.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 _sem.cpp
+     /tmp/ccFC5xS4.s:9      .text:0000000000000000 _ZN4_semdlEPv
+     /tmp/ccFC5xS4.s:13     .text:0000000000000000 .L0 
+     /tmp/ccFC5xS4.s:15     .text:0000000000000000 .L0 
+     /tmp/ccFC5xS4.s:16     .text:0000000000000004 .L0 
+     /tmp/ccFC5xS4.s:19     .text:000000000000000c .L0 
+     /tmp/ccFC5xS4.s:20     .text:000000000000000c .L0 
+     /tmp/ccFC5xS4.s:22     .text:0000000000000010 .L0 
+     /tmp/ccFC5xS4.s:24     .text:0000000000000010 .L0 
+     /tmp/ccFC5xS4.s:25     .text:0000000000000010 .L0 
+     /tmp/ccFC5xS4.s:28     .text:0000000000000018 .L0 
+     /tmp/ccFC5xS4.s:29     .text:000000000000001c .L0 
+     /tmp/ccFC5xS4.s:31     .text:0000000000000020 .L0 
+     /tmp/ccFC5xS4.s:32     .text:0000000000000020 .L0 
+     /tmp/ccFC5xS4.s:34     .text:0000000000000024 .L0 
+     /tmp/ccFC5xS4.s:36     .text:0000000000000028 .L0 
+     /tmp/ccFC5xS4.s:43     .text:0000000000000028 .L0 
+     /tmp/ccFC5xS4.s:231    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccFC5xS4.s:554    .debug_str:0000000000000147 .LASF18
+     /tmp/ccFC5xS4.s:548    .debug_str:0000000000000114 .LASF19
+     /tmp/ccFC5xS4.s:532    .debug_str:0000000000000087 .LASF20
+     /tmp/ccFC5xS4.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccFC5xS4.s:39     .text:0000000000000028 .Letext0
+     /tmp/ccFC5xS4.s:510    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccFC5xS4.s:520    .debug_str:000000000000003f .LASF21
+     /tmp/ccFC5xS4.s:534    .debug_str:00000000000000a5 .LASF22
+     /tmp/ccFC5xS4.s:512    .debug_str:0000000000000000 .LASF23
+     /tmp/ccFC5xS4.s:560    .debug_str:000000000000022a .LASF0
+     /tmp/ccFC5xS4.s:552    .debug_str:0000000000000134 .LASF1
+     /tmp/ccFC5xS4.s:538    .debug_str:00000000000000c1 .LASF2
+     /tmp/ccFC5xS4.s:530    .debug_str:0000000000000080 .LASF4
+     /tmp/ccFC5xS4.s:526    .debug_str:000000000000005b .LASF3
+     /tmp/ccFC5xS4.s:522    .debug_str:0000000000000044 .LASF5
+     /tmp/ccFC5xS4.s:528    .debug_str:000000000000006d .LASF6
+     /tmp/ccFC5xS4.s:550    .debug_str:0000000000000121 .LASF7
+     /tmp/ccFC5xS4.s:558    .debug_str:000000000000021a .LASF8
+     /tmp/ccFC5xS4.s:518    .debug_str:0000000000000031 .LASF9
+     /tmp/ccFC5xS4.s:540    .debug_str:00000000000000cf .LASF10
+     /tmp/ccFC5xS4.s:556    .debug_str:000000000000020b .LASF11
+     /tmp/ccFC5xS4.s:524    .debug_str:000000000000004b .LASF12
+     /tmp/ccFC5xS4.s:514    .debug_str:000000000000000e .LASF13
+     /tmp/ccFC5xS4.s:536    .debug_str:00000000000000b5 .LASF14
+     /tmp/ccFC5xS4.s:546    .debug_str:00000000000000fe .LASF15
+     /tmp/ccFC5xS4.s:542    .debug_str:00000000000000de .LASF16
+     /tmp/ccFC5xS4.s:562    .debug_str:0000000000000237 .LASF17
+     /tmp/ccFC5xS4.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccFC5xS4.s:37     .text:0000000000000028 .LFE0
+     /tmp/ccFC5xS4.s:483    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccFC5xS4.s:26     .text:0000000000000018 .LVL1
+     /tmp/ccFC5xS4.s:516    .debug_str:000000000000001e .LASF24
+     /tmp/ccFC5xS4.s:544    .debug_str:00000000000000f4 .LASF25
+     /tmp/ccFC5xS4.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccFC5xS4.s:44     .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+_Z9sem_closeP4_sem
+GAS LISTING /tmp/ccFC5xS4.s 			page 3
+
+
