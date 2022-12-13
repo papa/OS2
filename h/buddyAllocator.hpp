@@ -9,7 +9,6 @@
 
 #define MAX_LEVEL 32
 #define BLOCK_SIZE_POWER_2 12
-#define BLOCK_SIZE 4096
 typedef char block[4096];
 
 typedef struct buddyLevel
@@ -38,5 +37,5 @@ void addBlocks(buddyAllocator* buddy, void* addr, size_t numOfBlocks);
 size_t getBuddyBlockAddr(void* addr, size_t level);
 void addBlockToLevel(buddyAllocator* buddy, void* addr, size_t level);
 void split(buddyAllocator* buddy, void* addr, size_t finalLevel, size_t currLevel, bool splitMore);
-
+void printBuddyInfo(buddyAllocator* buddy);
 #endif //PROJECT_BASE_BUDDYALLOCATOR_H

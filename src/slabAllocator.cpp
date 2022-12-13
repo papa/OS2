@@ -43,13 +43,12 @@ static slab_allocator_t* slabAllocator = nullptr;
 
 //helping functions
 
-void strcpy(char* const src, char* dst)
+void strcpy(const char* src, char* dst)
 {
-    char* iter = src;
-    while(*iter != '\0')
+    while(*src != '\0')
     {
-        *dst = *iter;
-        iter++;
+        *dst = *src;
+        src++;
     }
 }
 
