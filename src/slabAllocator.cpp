@@ -7,6 +7,7 @@
 #define CACHE_BUFFER_BIG 17
 #define CACHE_BUFFER_SIZE CACHE_BUFFER_BIG - CACHE_BUFFER_SMALL + 1
 #define CACHE_OF_CACHES_SLAB_SIZE 2
+
 typedef struct slab_s
 {
     slab_s* prev;
@@ -85,11 +86,30 @@ void kmem_init(void *space, int block_num)
     slabAllocator = slab_allocator_init(buddy);
 }
 
+size_t getOptimalSlabSize(size_t obj_size)
+{
+    size_t bestSize = BLOCK_SIZE;
+    while(bestSize < obj_size + sizeof(slab_t))
+        bestSize<<=1;
+    size_t optimalWaste = (bestSize - sizeof(slab_t)) % obj_size;
+
+
+}
+
 kmem_cache_t *kmem_cache_create(const char *name, size_t size,
                                 void (*ctor)(void *),
                                 void (*dtor)(void *))
 {
-
+    kmem_cache_t* newCache = (kmem_cache_t*)kmem_cache_alloc(&slabAllocator->cacheOfCaches);
+    newCache->slabs_empty = nullptr;
+    newCache->slabs_partial = nullptr;
+    newCache->slabs_full = nullptr;
+    newCache->next = newCache->prev = nullptr;
+    newCache->dtor = dtor;
+    newCache->ctor = ctor;
+    strcpy(name, newCache->cacheName);
+    newCache->obj_size = size;
+    //TODO optimal slab size
     return nullptr;
 }
 
@@ -138,12 +158,21 @@ void putEmptyToPartial(kmem_cache_t* cachep)
 
 void allocateSlab(kmem_cache_t* cachep)
 {
-    
+    slab_t* newSlab = (slab_t*)buddy_alloc(slabAllocator->buddy,cachep->slab_size*BLOCK_SIZE);
+    newSlab->next = cachep->slabs_empty;
+    cachep->slabs_empty = newSlab;
+    newSlab->prev = nullptr;
+    newSlab->numOfAllocatedObjects = 0;
+    newSlab->owner = cachep;
+    newSlab->startAddress = (void*)newSlab;
+    size_t sizeInBytes = cachep->slab_size*BLOCK_SIZE;
+    newSlab->numOfObjects = (sizeInBytes - sizeof(slab_t)) / cachep->obj_size; // TODO can this param be in cache ?
+    for(int i = 0; i < newSlab->numOfObjects / 8;i++)
+        newSlab->allocated[i] = 0;
 }
 
 void *kmem_cache_alloc(kmem_cache_t *cachep)
 {
-    slab_t *slabAlloc = nullptr;
     if(cachep->slabs_partial != nullptr)
     {
         void* allocatedAddr = allocateObject(cachep->slabs_partial);
@@ -161,11 +190,13 @@ void *kmem_cache_alloc(kmem_cache_t *cachep)
     else
     {
         allocateSlab(cachep);
+        if(cachep->slabs_empty == nullptr)
+            return nullptr;
         void* allocatedAddr = allocateObject(cachep->slabs_empty);
         if(full(cachep->slabs_empty))
             putEmptyToPartial(cachep);
         return allocatedAddr;
     }
-
+    return nullptr;
 }
 
