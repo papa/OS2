@@ -93,7 +93,9 @@ size_t getOptimalSlabSize(size_t obj_size)
         bestSize<<=1;
     size_t optimalWaste = (bestSize - sizeof(slab_t)) % obj_size;
 
+    //TODO
 
+    return bestSize;
 }
 
 kmem_cache_t *kmem_cache_create(const char *name, size_t size,
