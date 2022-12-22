@@ -7,14 +7,19 @@
 
 #include "../lib/hw.h"
 
-#define MAX_LEVEL 32
+#define MAX_LEVEL 12
 #define BLOCK_SIZE_POWER_2 12
 typedef char block[4096];
 
+typedef struct buddyBlock
+{
+    buddyBlock* next;
+}buddyBlock;
+
 typedef struct buddyLevel
 {
-    uint64* first = nullptr;
-    uint64* last = nullptr;
+    buddyBlock* first = nullptr;
+    buddyBlock* last = nullptr;
 }buddyLevel;
 
 typedef struct buddyAllocator

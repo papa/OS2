@@ -61,7 +61,7 @@ slab_allocator_t* slab_allocator_init(buddyAllocator *buddy)
 
     slabAllocatorLocal->buddy = buddy;
     slabAllocatorLocal->cacheList = nullptr;
-    for(int i = 0; i < CACHE_BUFFER_SIZE;i++)
+    for(size_t i = 0; i < CACHE_BUFFER_SIZE;i++)
         slabAllocatorLocal->cachesBuffers[i] = nullptr;
 
     //TODO
@@ -83,7 +83,7 @@ void* allocateObject(slab_t* slab)
 {
     int index = -1;
     void* addr = nullptr;
-    for(int i = 0;i < slab->numOfObjects;i++)
+    for(size_t i = 0;i < slab->numOfObjects;i++)
     {
         size_t mask = 1 << (i%8);
         if((uint8)slab->allocated[i/8] & mask)
@@ -150,7 +150,7 @@ void allocateSlab(kmem_cache_t* cachep)
     newSlab->startAddress = (void*)newSlab;
     size_t sizeInBytes = cachep->slab_size*BLOCK_SIZE;
     newSlab->numOfObjects = (sizeInBytes - sizeof(slab_t)) / cachep->obj_size; // TODO can this param be in cache ?
-    for(int i = 0; i < newSlab->numOfObjects / 8;i++)
+    for(size_t i = 0; i < newSlab->numOfObjects / 8;i++)
         newSlab->allocated[i] = 0;
 }
 
