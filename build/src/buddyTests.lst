@@ -1,0 +1,316 @@
+GAS LISTING /tmp/ccz5wM3U.s 			page 1
+
+
+   1              		.file	"buddyTests.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_Z14buddyInitTest1v
+   9              	_Z14buddyInitTest1v:
+  10              	.LFB0:
+  11              		.file 1 "src/buddyTests.cpp"
+   1:src/buddyTests.cpp **** #include "../h/buddyTests.hpp"
+   2:src/buddyTests.cpp **** 
+   3:src/buddyTests.cpp **** void buddyInitTest1()
+   4:src/buddyTests.cpp **** {
+  12              		.loc 1 4 1
+  13              		.cfi_startproc
+  14 0000 130101FF 		addi	sp,sp,-16
+  15              		.cfi_def_cfa_offset 16
+  16 0004 23341100 		sd	ra,8(sp)
+  17 0008 23308100 		sd	s0,0(sp)
+  18              		.cfi_offset 1, -8
+  19              		.cfi_offset 8, -16
+  20 000c 13040101 		addi	s0,sp,16
+  21              		.cfi_def_cfa 8, 0
+   5:src/buddyTests.cpp ****     buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 18);
+  22              		.loc 1 5 5
+  23              		.loc 1 5 39 is_stmt 0
+  24 0010 93052001 		li	a1,18
+  25 0014 97070000 		la	a5,HEAP_START_ADDR
+  25      83B70700 
+  26 001c 03B50700 		ld	a0,0(a5)
+  27 0020 97000000 		call	_Z10buddy_initPvm@plt
+  27      E7800000 
+  28              	.LVL0:
+   6:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+  29              		.loc 1 6 5 is_stmt 1
+  30              		.loc 1 6 19 is_stmt 0
+  31 0028 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+  31      E7800000 
+  32              	.LVL1:
+   7:src/buddyTests.cpp **** }
+  33              		.loc 1 7 1
+  34 0030 83308100 		ld	ra,8(sp)
+  35              		.cfi_restore 1
+  36 0034 03340100 		ld	s0,0(sp)
+  37              		.cfi_restore 8
+  38              		.cfi_def_cfa 2, 16
+  39 0038 13010101 		addi	sp,sp,16
+  40              		.cfi_def_cfa_offset 0
+  41 003c 67800000 		jr	ra
+  42              		.cfi_endproc
+  43              	.LFE0:
+  45              		.align	2
+  46              		.globl	_Z20buddyOnlyAllocsTest1v
+  48              	_Z20buddyOnlyAllocsTest1v:
+  49              	.LFB1:
+   8:src/buddyTests.cpp **** 
+GAS LISTING /tmp/ccz5wM3U.s 			page 2
+
+
+   9:src/buddyTests.cpp **** void buddyOnlyAllocsTest1()
+  10:src/buddyTests.cpp **** {
+  50              		.loc 1 10 1 is_stmt 1
+  51              		.cfi_startproc
+  52 0040 130101FE 		addi	sp,sp,-32
+  53              		.cfi_def_cfa_offset 32
+  54 0044 233C1100 		sd	ra,24(sp)
+  55 0048 23388100 		sd	s0,16(sp)
+  56 004c 23349100 		sd	s1,8(sp)
+  57              		.cfi_offset 1, -8
+  58              		.cfi_offset 8, -16
+  59              		.cfi_offset 9, -24
+  60 0050 13040102 		addi	s0,sp,32
+  61              		.cfi_def_cfa 8, 0
+  11:src/buddyTests.cpp ****     buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 10);
+  62              		.loc 1 11 5
+  63              		.loc 1 11 39 is_stmt 0
+  64 0054 9305A000 		li	a1,10
+  65 0058 97070000 		la	a5,HEAP_START_ADDR
+  65      83B70700 
+  66 0060 03B50700 		ld	a0,0(a5)
+  67 0064 97000000 		call	_Z10buddy_initPvm@plt
+  67      E7800000 
+  68              	.LVL2:
+  69 006c 93040500 		mv	s1,a0
+  70              	.LVL3:
+  12:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+  71              		.loc 1 12 5 is_stmt 1
+  72              		.loc 1 12 19 is_stmt 0
+  73 0070 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+  73      E7800000 
+  74              	.LVL4:
+  13:src/buddyTests.cpp ****     buddy_alloc(buddy,3);
+  75              		.loc 1 13 5 is_stmt 1
+  76              		.loc 1 13 16 is_stmt 0
+  77 0078 93053000 		li	a1,3
+  78 007c 13850400 		mv	a0,s1
+  79 0080 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+  79      E7800000 
+  80              	.LVL5:
+  14:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+  81              		.loc 1 14 5 is_stmt 1
+  82              		.loc 1 14 19 is_stmt 0
+  83 0088 13850400 		mv	a0,s1
+  84 008c 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+  84      E7800000 
+  85              	.LVL6:
+  15:src/buddyTests.cpp ****     buddy_alloc(buddy,1);
+  86              		.loc 1 15 5 is_stmt 1
+  87              		.loc 1 15 16 is_stmt 0
+  88 0094 93051000 		li	a1,1
+  89 0098 13850400 		mv	a0,s1
+  90 009c 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+  90      E7800000 
+  91              	.LVL7:
+  16:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+  92              		.loc 1 16 5 is_stmt 1
+GAS LISTING /tmp/ccz5wM3U.s 			page 3
+
+
+  93              		.loc 1 16 19 is_stmt 0
+  94 00a4 13850400 		mv	a0,s1
+  95 00a8 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+  95      E7800000 
+  96              	.LVL8:
+  17:src/buddyTests.cpp ****     buddy_alloc(buddy,1);
+  97              		.loc 1 17 5 is_stmt 1
+  98              		.loc 1 17 16 is_stmt 0
+  99 00b0 93051000 		li	a1,1
+ 100 00b4 13850400 		mv	a0,s1
+ 101 00b8 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 101      E7800000 
+ 102              	.LVL9:
+  18:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 103              		.loc 1 18 5 is_stmt 1
+ 104              		.loc 1 18 19 is_stmt 0
+ 105 00c0 13850400 		mv	a0,s1
+ 106 00c4 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 106      E7800000 
+ 107              	.LVL10:
+  19:src/buddyTests.cpp ****     buddy_alloc(buddy,1);
+ 108              		.loc 1 19 5 is_stmt 1
+ 109              		.loc 1 19 16 is_stmt 0
+ 110 00cc 93051000 		li	a1,1
+ 111 00d0 13850400 		mv	a0,s1
+ 112 00d4 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 112      E7800000 
+ 113              	.LVL11:
+  20:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 114              		.loc 1 20 5 is_stmt 1
+ 115              		.loc 1 20 19 is_stmt 0
+ 116 00dc 13850400 		mv	a0,s1
+ 117 00e0 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 117      E7800000 
+ 118              	.LVL12:
+  21:src/buddyTests.cpp **** }...
+ 119              		.loc 1 21 1
+ 120 00e8 83308101 		ld	ra,24(sp)
+ 121              		.cfi_restore 1
+ 122 00ec 03340101 		ld	s0,16(sp)
+ 123              		.cfi_restore 8
+ 124              		.cfi_def_cfa 2, 32
+ 125 00f0 83348100 		ld	s1,8(sp)
+ 126              		.cfi_restore 9
+ 127              	.LVL13:
+ 128 00f4 13010102 		addi	sp,sp,32
+ 129              		.cfi_def_cfa_offset 0
+ 130 00f8 67800000 		jr	ra
+ 131              		.cfi_endproc
+ 132              	.LFE1:
+ 134              	.Letext0:
+ 135              		.file 2 "src/../h/../lib/hw.h"
+ 136              		.file 3 "src/../h/buddyAllocator.hpp"
+GAS LISTING /tmp/ccz5wM3U.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 buddyTests.cpp
+     /tmp/ccz5wM3U.s:9      .text:0000000000000000 _Z14buddyInitTest1v
+     /tmp/ccz5wM3U.s:13     .text:0000000000000000 .L0 
+     /tmp/ccz5wM3U.s:14     .text:0000000000000000 .L0 
+     /tmp/ccz5wM3U.s:15     .text:0000000000000004 .L0 
+     /tmp/ccz5wM3U.s:18     .text:000000000000000c .L0 
+     /tmp/ccz5wM3U.s:19     .text:000000000000000c .L0 
+     /tmp/ccz5wM3U.s:21     .text:0000000000000010 .L0 
+     /tmp/ccz5wM3U.s:23     .text:0000000000000010 .L0 
+     /tmp/ccz5wM3U.s:24     .text:0000000000000010 .L0 
+     /tmp/ccz5wM3U.s:30     .text:0000000000000028 .L0 
+     /tmp/ccz5wM3U.s:31     .text:0000000000000028 .L0 
+     /tmp/ccz5wM3U.s:34     .text:0000000000000030 .L0 
+     /tmp/ccz5wM3U.s:35     .text:0000000000000034 .L0 
+     /tmp/ccz5wM3U.s:37     .text:0000000000000038 .L0 
+     /tmp/ccz5wM3U.s:38     .text:0000000000000038 .L0 
+     /tmp/ccz5wM3U.s:40     .text:000000000000003c .L0 
+     /tmp/ccz5wM3U.s:42     .text:0000000000000040 .L0 
+     /tmp/ccz5wM3U.s:48     .text:0000000000000040 _Z20buddyOnlyAllocsTest1v
+     /tmp/ccz5wM3U.s:51     .text:0000000000000040 .L0 
+     /tmp/ccz5wM3U.s:52     .text:0000000000000040 .L0 
+     /tmp/ccz5wM3U.s:53     .text:0000000000000044 .L0 
+     /tmp/ccz5wM3U.s:57     .text:0000000000000050 .L0 
+     /tmp/ccz5wM3U.s:58     .text:0000000000000050 .L0 
+     /tmp/ccz5wM3U.s:59     .text:0000000000000050 .L0 
+     /tmp/ccz5wM3U.s:61     .text:0000000000000054 .L0 
+     /tmp/ccz5wM3U.s:63     .text:0000000000000054 .L0 
+     /tmp/ccz5wM3U.s:64     .text:0000000000000054 .L0 
+     /tmp/ccz5wM3U.s:72     .text:0000000000000070 .L0 
+     /tmp/ccz5wM3U.s:73     .text:0000000000000070 .L0 
+     /tmp/ccz5wM3U.s:76     .text:0000000000000078 .L0 
+     /tmp/ccz5wM3U.s:77     .text:0000000000000078 .L0 
+     /tmp/ccz5wM3U.s:82     .text:0000000000000088 .L0 
+     /tmp/ccz5wM3U.s:83     .text:0000000000000088 .L0 
+     /tmp/ccz5wM3U.s:87     .text:0000000000000094 .L0 
+     /tmp/ccz5wM3U.s:88     .text:0000000000000094 .L0 
+     /tmp/ccz5wM3U.s:93     .text:00000000000000a4 .L0 
+     /tmp/ccz5wM3U.s:94     .text:00000000000000a4 .L0 
+     /tmp/ccz5wM3U.s:98     .text:00000000000000b0 .L0 
+     /tmp/ccz5wM3U.s:99     .text:00000000000000b0 .L0 
+     /tmp/ccz5wM3U.s:104    .text:00000000000000c0 .L0 
+     /tmp/ccz5wM3U.s:105    .text:00000000000000c0 .L0 
+     /tmp/ccz5wM3U.s:109    .text:00000000000000cc .L0 
+     /tmp/ccz5wM3U.s:110    .text:00000000000000cc .L0 
+     /tmp/ccz5wM3U.s:115    .text:00000000000000dc .L0 
+     /tmp/ccz5wM3U.s:116    .text:00000000000000dc .L0 
+     /tmp/ccz5wM3U.s:120    .text:00000000000000e8 .L0 
+     /tmp/ccz5wM3U.s:121    .text:00000000000000ec .L0 
+     /tmp/ccz5wM3U.s:123    .text:00000000000000f0 .L0 
+     /tmp/ccz5wM3U.s:124    .text:00000000000000f0 .L0 
+     /tmp/ccz5wM3U.s:126    .text:00000000000000f4 .L0 
+     /tmp/ccz5wM3U.s:129    .text:00000000000000f8 .L0 
+     /tmp/ccz5wM3U.s:131    .text:00000000000000fc .L0 
+     /tmp/ccz5wM3U.s:137    .text:00000000000000fc .L0 
+     /tmp/ccz5wM3U.s:25     .text:0000000000000014 .L0 
+     /tmp/ccz5wM3U.s:65     .text:0000000000000058 .L0 
+GAS LISTING /tmp/ccz5wM3U.s 			page 5
+
+
+     /tmp/ccz5wM3U.s:578    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccz5wM3U.s:952    .debug_str:00000000000001cd .LASF40
+     /tmp/ccz5wM3U.s:910    .debug_str:000000000000007a .LASF41
+     /tmp/ccz5wM3U.s:920    .debug_str:00000000000000c6 .LASF42
+     /tmp/ccz5wM3U.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccz5wM3U.s:134    .text:00000000000000fc .Letext0
+     /tmp/ccz5wM3U.s:888    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccz5wM3U.s:892    .debug_str:0000000000000005 .LASF0
+     /tmp/ccz5wM3U.s:950    .debug_str:00000000000001ba .LASF1
+     /tmp/ccz5wM3U.s:924    .debug_str:00000000000000f0 .LASF2
+     /tmp/ccz5wM3U.s:916    .debug_str:00000000000000ab .LASF4
+     /tmp/ccz5wM3U.s:908    .debug_str:0000000000000068 .LASF3
+     /tmp/ccz5wM3U.s:898    .debug_str:000000000000002f .LASF5
+     /tmp/ccz5wM3U.s:914    .debug_str:0000000000000098 .LASF6
+     /tmp/ccz5wM3U.s:948    .debug_str:00000000000001a7 .LASF7
+     /tmp/ccz5wM3U.s:962    .debug_str:00000000000002f3 .LASF8
+     /tmp/ccz5wM3U.s:894    .debug_str:0000000000000012 .LASF9
+     /tmp/ccz5wM3U.s:896    .debug_str:0000000000000020 .LASF10
+     /tmp/ccz5wM3U.s:954    .debug_str:0000000000000291 .LASF11
+     /tmp/ccz5wM3U.s:900    .debug_str:0000000000000036 .LASF12
+     /tmp/ccz5wM3U.s:968    .debug_str:000000000000031c .LASF13
+     /tmp/ccz5wM3U.s:922    .debug_str:00000000000000e4 .LASF14
+     /tmp/ccz5wM3U.s:940    .debug_str:000000000000016c .LASF15
+     /tmp/ccz5wM3U.s:930    .debug_str:0000000000000112 .LASF16
+     /tmp/ccz5wM3U.s:928    .debug_str:000000000000010d .LASF17
+     /tmp/ccz5wM3U.s:942    .debug_str:0000000000000182 .LASF18
+     /tmp/ccz5wM3U.s:974    .debug_str:000000000000033e .LASF20
+     /tmp/ccz5wM3U.s:944    .debug_str:000000000000018d .LASF19
+     /tmp/ccz5wM3U.s:972    .debug_str:0000000000000338 .LASF21
+     /tmp/ccz5wM3U.s:890    .debug_str:0000000000000000 .LASF22
+     /tmp/ccz5wM3U.s:906    .debug_str:0000000000000059 .LASF23
+     /tmp/ccz5wM3U.s:970    .debug_str:000000000000032c .LASF24
+     /tmp/ccz5wM3U.s:904    .debug_str:000000000000004f .LASF25
+     /tmp/ccz5wM3U.s:936    .debug_str:0000000000000156 .LASF26
+     /tmp/ccz5wM3U.s:902    .debug_str:0000000000000046 .LASF27
+     /tmp/ccz5wM3U.s:964    .debug_str:0000000000000303 .LASF28
+     /tmp/ccz5wM3U.s:960    .debug_str:00000000000002de .LASF30
+     /tmp/ccz5wM3U.s:956    .debug_str:00000000000002a0 .LASF32
+     /tmp/ccz5wM3U.s:49     .text:0000000000000040 .LFB1
+     /tmp/ccz5wM3U.s:132    .text:00000000000000fc .LFE1
+     /tmp/ccz5wM3U.s:938    .debug_str:0000000000000166 .LASF29
+     /tmp/ccz5wM3U.s:861    .debug_loc:0000000000000000 .LLST1
+     /tmp/ccz5wM3U.s:68     .text:000000000000006c .LVL2
+     /tmp/ccz5wM3U.s:74     .text:0000000000000078 .LVL4
+     /tmp/ccz5wM3U.s:80     .text:0000000000000088 .LVL5
+     /tmp/ccz5wM3U.s:85     .text:0000000000000094 .LVL6
+     /tmp/ccz5wM3U.s:91     .text:00000000000000a4 .LVL7
+     /tmp/ccz5wM3U.s:96     .text:00000000000000b0 .LVL8
+     /tmp/ccz5wM3U.s:102    .text:00000000000000c0 .LVL9
+     /tmp/ccz5wM3U.s:107    .text:00000000000000cc .LVL10
+     /tmp/ccz5wM3U.s:113    .text:00000000000000dc .LVL11
+     /tmp/ccz5wM3U.s:118    .text:00000000000000e8 .LVL12
+     /tmp/ccz5wM3U.s:946    .debug_str:0000000000000198 .LASF31
+     /tmp/ccz5wM3U.s:918    .debug_str:00000000000000b2 .LASF33
+     /tmp/ccz5wM3U.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccz5wM3U.s:43     .text:0000000000000040 .LFE0
+     /tmp/ccz5wM3U.s:868    .debug_loc:0000000000000023 .LLST0
+GAS LISTING /tmp/ccz5wM3U.s 			page 6
+
+
+     /tmp/ccz5wM3U.s:28     .text:0000000000000028 .LVL0
+     /tmp/ccz5wM3U.s:32     .text:0000000000000030 .LVL1
+     /tmp/ccz5wM3U.s:966    .debug_str:000000000000030a .LASF34
+     /tmp/ccz5wM3U.s:912    .debug_str:000000000000008d .LASF36
+     /tmp/ccz5wM3U.s:958    .debug_str:00000000000002ba .LASF35
+     /tmp/ccz5wM3U.s:926    .debug_str:00000000000000fe .LASF37
+     /tmp/ccz5wM3U.s:932    .debug_str:0000000000000128 .LASF38
+     /tmp/ccz5wM3U.s:934    .debug_str:000000000000014a .LASF39
+     /tmp/ccz5wM3U.s:70     .text:0000000000000070 .LVL3
+     /tmp/ccz5wM3U.s:127    .text:00000000000000f4 .LVL13
+     /tmp/ccz5wM3U.s:138    .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+HEAP_START_ADDR
+_Z10buddy_initPvm
+_Z14printBuddyInfoP14buddyAllocator
+_Z11buddy_allocP14buddyAllocatorm

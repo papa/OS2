@@ -9,6 +9,7 @@
 #include "../h/SleepPCBList.hpp"
 #include "../h/KConsole.hpp"
 #include "../h/Scheduler.hpp"
+#include "../h/buddyTests.hpp"
 
 uint64 Riscv::totalTime = 0;
 bool Riscv::finishSystem = false;
@@ -184,14 +185,14 @@ void Riscv::kernelMain()
     kernelMainCalled = true;
 
     initSystem();
-
+    buddyOnlyAllocsTest1();
     //disableTimerInterrupts();
-    enableInterrupts();
+    //enableInterrupts();
 
-    while(!PCB::userPCB->isFinished())
+    /*while(!PCB::userPCB->isFinished())
     {
         thread_dispatch();
-    }
+    }*/
 
     //printString("End...\n");
     endSystem();

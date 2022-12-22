@@ -24,10 +24,10 @@ typedef struct buddyLevel
 
 typedef struct buddyAllocator
 {
-    size_t numOfBlocks;
-    void* startAddr;
+    size_t numOfBlocks; //number of blocks
+    void* startAddr; //star addr of buddy
     size_t numOfFreeBlocks; // is it even important?
-    size_t maxLevel;
+    size_t maxLevel; //mav level to divide
     buddyLevel bucket[MAX_LEVEL];
 }buddyAllocator;
 
@@ -39,7 +39,7 @@ inline size_t getNextBlockAddr(size_t addr);
 inline size_t getDeg2Floor(size_t num);
 inline size_t getDeg2Ceil(size_t num);
 void addBlocks(buddyAllocator* buddy, void* addr, size_t numOfBlocks);
-size_t getBuddyBlockAddr(void* addr, size_t level);
+size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level);
 void addBlockToLevel(buddyAllocator* buddy, void* addr, size_t level);
 void split(buddyAllocator* buddy, void* addr, size_t finalLevel, size_t currLevel, bool splitMore);
 void printBuddyInfo(buddyAllocator* buddy);

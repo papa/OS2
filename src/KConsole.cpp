@@ -147,12 +147,12 @@ void KConsole::trapPrintString(const char *string)
     }
 }
 
-void KConsole::trapPrintInt(int xx, int base, int sgn)
+void KConsole::trapPrintInt(size_t xx, int base, int sgn)
 {
     char digits[] = "0123456789ABCDEF";
     char buf[16];
     int i, neg;
-    uint x;
+    size_t x;
 
     neg = 0;
     if(sgn && xx < 0) {
