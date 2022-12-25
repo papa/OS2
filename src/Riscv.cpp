@@ -185,7 +185,7 @@ void Riscv::kernelMain()
     kernelMainCalled = true;
 
     initSystem();
-    buddyOnlyAllocsTest1();
+    buddyOnlyAllocsTest2();
     //disableTimerInterrupts();
     //enableInterrupts();
 

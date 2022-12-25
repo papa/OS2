@@ -1,4 +1,4 @@
-GAS LISTING /tmp/ccz5wM3U.s 			page 1
+GAS LISTING /tmp/ccIE1J7R.s 			page 1
 
 
    1              		.file	"buddyTests.cpp"
@@ -58,7 +58,7 @@ GAS LISTING /tmp/ccz5wM3U.s 			page 1
   48              	_Z20buddyOnlyAllocsTest1v:
   49              	.LFB1:
    8:src/buddyTests.cpp **** 
-GAS LISTING /tmp/ccz5wM3U.s 			page 2
+GAS LISTING /tmp/ccIE1J7R.s 			page 2
 
 
    9:src/buddyTests.cpp **** void buddyOnlyAllocsTest1()
@@ -93,10 +93,10 @@ GAS LISTING /tmp/ccz5wM3U.s 			page 1
   73 0070 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
   73      E7800000 
   74              	.LVL4:
-  13:src/buddyTests.cpp ****     buddy_alloc(buddy,3);
+  13:src/buddyTests.cpp ****     buddy_alloc(buddy,1);
   75              		.loc 1 13 5 is_stmt 1
   76              		.loc 1 13 16 is_stmt 0
-  77 0078 93053000 		li	a1,3
+  77 0078 93051000 		li	a1,1
   78 007c 13850400 		mv	a0,s1
   79 0080 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
   79      E7800000 
@@ -118,7 +118,7 @@ GAS LISTING /tmp/ccz5wM3U.s 			page 1
   91              	.LVL7:
   16:src/buddyTests.cpp ****     printBuddyInfo(buddy);
   92              		.loc 1 16 5 is_stmt 1
-GAS LISTING /tmp/ccz5wM3U.s 			page 3
+GAS LISTING /tmp/ccIE1J7R.s 			page 3
 
 
   93              		.loc 1 16 19 is_stmt 0
@@ -141,10 +141,10 @@ GAS LISTING /tmp/ccz5wM3U.s 			page 1
  106 00c4 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
  106      E7800000 
  107              	.LVL10:
-  19:src/buddyTests.cpp ****     buddy_alloc(buddy,1);
+  19:src/buddyTests.cpp ****     buddy_alloc(buddy,3);
  108              		.loc 1 19 5 is_stmt 1
  109              		.loc 1 19 16 is_stmt 0
- 110 00cc 93051000 		li	a1,1
+ 110 00cc 93053000 		li	a1,3
  111 00d0 13850400 		mv	a0,s1
  112 00d4 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
  112      E7800000 
@@ -156,7 +156,7 @@ GAS LISTING /tmp/ccz5wM3U.s 			page 1
  117 00e0 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
  117      E7800000 
  118              	.LVL12:
-  21:src/buddyTests.cpp **** }...
+  21:src/buddyTests.cpp **** }
  119              		.loc 1 21 1
  120 00e8 83308101 		ld	ra,24(sp)
  121              		.cfi_restore 1
@@ -171,146 +171,573 @@ GAS LISTING /tmp/ccz5wM3U.s 			page 1
  130 00f8 67800000 		jr	ra
  131              		.cfi_endproc
  132              	.LFE1:
- 134              	.Letext0:
- 135              		.file 2 "src/../h/../lib/hw.h"
- 136              		.file 3 "src/../h/buddyAllocator.hpp"
-GAS LISTING /tmp/ccz5wM3U.s 			page 4
+ 134              		.align	2
+ 135              		.globl	_Z20buddyOnlyAllocsTest2v
+ 137              	_Z20buddyOnlyAllocsTest2v:
+ 138              	.LFB2:
+  22:src/buddyTests.cpp **** 
+  23:src/buddyTests.cpp **** void buddyOnlyAllocsTest2()
+  24:src/buddyTests.cpp **** {
+GAS LISTING /tmp/ccIE1J7R.s 			page 4
+
+
+ 139              		.loc 1 24 1 is_stmt 1
+ 140              		.cfi_startproc
+ 141 00fc 130101FE 		addi	sp,sp,-32
+ 142              		.cfi_def_cfa_offset 32
+ 143 0100 233C1100 		sd	ra,24(sp)
+ 144 0104 23388100 		sd	s0,16(sp)
+ 145 0108 23349100 		sd	s1,8(sp)
+ 146              		.cfi_offset 1, -8
+ 147              		.cfi_offset 8, -16
+ 148              		.cfi_offset 9, -24
+ 149 010c 13040102 		addi	s0,sp,32
+ 150              		.cfi_def_cfa 8, 0
+  25:src/buddyTests.cpp ****     buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 10);
+ 151              		.loc 1 25 5
+ 152              		.loc 1 25 39 is_stmt 0
+ 153 0110 9305A000 		li	a1,10
+ 154 0114 97070000 		la	a5,HEAP_START_ADDR
+ 154      83B70700 
+ 155 011c 03B50700 		ld	a0,0(a5)
+ 156 0120 97000000 		call	_Z10buddy_initPvm@plt
+ 156      E7800000 
+ 157              	.LVL14:
+ 158 0128 93040500 		mv	s1,a0
+ 159              	.LVL15:
+  26:src/buddyTests.cpp ****     void* adr = buddy_alloc(buddy, 100);
+ 160              		.loc 1 26 5 is_stmt 1
+ 161              		.loc 1 26 28 is_stmt 0
+ 162 012c 93054006 		li	a1,100
+ 163 0130 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 163      E7800000 
+ 164              	.LVL16:
+  27:src/buddyTests.cpp ****     if(adr == nullptr)
+ 165              		.loc 1 27 5 is_stmt 1
+ 166 0138 630C0500 		beqz	a0,.L8
+ 167              	.LVL17:
+ 168              	.L5:
+  28:src/buddyTests.cpp ****     {
+  29:src/buddyTests.cpp ****         printBuddyInfo(buddy);
+  30:src/buddyTests.cpp ****     }
+  31:src/buddyTests.cpp **** }
+ 169              		.loc 1 31 1 is_stmt 0
+ 170 013c 83308101 		ld	ra,24(sp)
+ 171              		.cfi_remember_state
+ 172              		.cfi_restore 1
+ 173 0140 03340101 		ld	s0,16(sp)
+ 174              		.cfi_restore 8
+ 175              		.cfi_def_cfa 2, 32
+ 176 0144 83348100 		ld	s1,8(sp)
+ 177              		.cfi_restore 9
+ 178              	.LVL18:
+ 179 0148 13010102 		addi	sp,sp,32
+ 180              		.cfi_def_cfa_offset 0
+ 181 014c 67800000 		jr	ra
+ 182              	.LVL19:
+ 183              	.L8:
+ 184              		.cfi_restore_state
+  29:src/buddyTests.cpp ****     }
+GAS LISTING /tmp/ccIE1J7R.s 			page 5
+
+
+ 185              		.loc 1 29 9 is_stmt 1
+  29:src/buddyTests.cpp ****     }
+ 186              		.loc 1 29 23 is_stmt 0
+ 187 0150 13850400 		mv	a0,s1
+ 188              	.LVL20:
+ 189 0154 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 189      E7800000 
+ 190              	.LVL21:
+ 191              		.loc 1 31 1
+ 192 015c 6FF01FFE 		j	.L5
+ 193              		.cfi_endproc
+ 194              	.LFE2:
+ 196              		.align	2
+ 197              		.globl	_Z19buddyAllocFreeTest1v
+ 199              	_Z19buddyAllocFreeTest1v:
+ 200              	.LFB3:
+  32:src/buddyTests.cpp **** 
+  33:src/buddyTests.cpp **** void buddyAllocFreeTest1()
+  34:src/buddyTests.cpp **** {
+ 201              		.loc 1 34 1 is_stmt 1
+ 202              		.cfi_startproc
+ 203 0160 130101FD 		addi	sp,sp,-48
+ 204              		.cfi_def_cfa_offset 48
+ 205 0164 23341102 		sd	ra,40(sp)
+ 206 0168 23308102 		sd	s0,32(sp)
+ 207 016c 233C9100 		sd	s1,24(sp)
+ 208 0170 23382101 		sd	s2,16(sp)
+ 209 0174 23343101 		sd	s3,8(sp)
+ 210              		.cfi_offset 1, -8
+ 211              		.cfi_offset 8, -16
+ 212              		.cfi_offset 9, -24
+ 213              		.cfi_offset 18, -32
+ 214              		.cfi_offset 19, -40
+ 215 0178 13040103 		addi	s0,sp,48
+ 216              		.cfi_def_cfa 8, 0
+  35:src/buddyTests.cpp ****     buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 10);
+ 217              		.loc 1 35 5
+ 218              		.loc 1 35 39 is_stmt 0
+ 219 017c 9305A000 		li	a1,10
+ 220 0180 97070000 		la	a5,HEAP_START_ADDR
+ 220      83B70700 
+ 221 0188 03B50700 		ld	a0,0(a5)
+ 222 018c 97000000 		call	_Z10buddy_initPvm@plt
+ 222      E7800000 
+ 223              	.LVL22:
+ 224 0194 93040500 		mv	s1,a0
+ 225              	.LVL23:
+  36:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 226              		.loc 1 36 5 is_stmt 1
+ 227              		.loc 1 36 19 is_stmt 0
+ 228 0198 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 228      E7800000 
+ 229              	.LVL24:
+  37:src/buddyTests.cpp ****     void* adr = buddy_alloc(buddy,1);
+ 230              		.loc 1 37 5 is_stmt 1
+ 231              		.loc 1 37 28 is_stmt 0
+ 232 01a0 93051000 		li	a1,1
+GAS LISTING /tmp/ccIE1J7R.s 			page 6
+
+
+ 233 01a4 13850400 		mv	a0,s1
+ 234 01a8 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 234      E7800000 
+ 235              	.LVL25:
+ 236 01b0 13090500 		mv	s2,a0
+ 237              	.LVL26:
+  38:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 238              		.loc 1 38 5 is_stmt 1
+ 239              		.loc 1 38 19 is_stmt 0
+ 240 01b4 13850400 		mv	a0,s1
+ 241              	.LVL27:
+ 242 01b8 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 242      E7800000 
+ 243              	.LVL28:
+  39:src/buddyTests.cpp ****     buddy_free(buddy, adr, 1);
+ 244              		.loc 1 39 5 is_stmt 1
+ 245              		.loc 1 39 15 is_stmt 0
+ 246 01c0 13061000 		li	a2,1
+ 247 01c4 93050900 		mv	a1,s2
+ 248 01c8 13850400 		mv	a0,s1
+ 249 01cc 97000000 		call	_Z10buddy_freeP14buddyAllocatorPvm@plt
+ 249      E7800000 
+ 250              	.LVL29:
+  40:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 251              		.loc 1 40 5 is_stmt 1
+ 252              		.loc 1 40 19 is_stmt 0
+ 253 01d4 13850400 		mv	a0,s1
+ 254 01d8 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 254      E7800000 
+ 255              	.LVL30:
+  41:src/buddyTests.cpp **** 
+  42:src/buddyTests.cpp ****     adr = buddy_alloc(buddy, 2);
+ 256              		.loc 1 42 5 is_stmt 1
+ 257              		.loc 1 42 22 is_stmt 0
+ 258 01e0 93052000 		li	a1,2
+ 259 01e4 13850400 		mv	a0,s1
+ 260 01e8 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 260      E7800000 
+ 261              	.LVL31:
+ 262 01f0 13090500 		mv	s2,a0
+ 263              	.LVL32:
+  43:src/buddyTests.cpp ****     void* adr2 = buddy_alloc(buddy, 3);
+ 264              		.loc 1 43 5 is_stmt 1
+ 265              		.loc 1 43 29 is_stmt 0
+ 266 01f4 93053000 		li	a1,3
+ 267 01f8 13850400 		mv	a0,s1
+ 268              	.LVL33:
+ 269 01fc 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 269      E7800000 
+ 270              	.LVL34:
+ 271 0204 93090500 		mv	s3,a0
+ 272              	.LVL35:
+  44:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 273              		.loc 1 44 5 is_stmt 1
+ 274              		.loc 1 44 19 is_stmt 0
+ 275 0208 13850400 		mv	a0,s1
+ 276              	.LVL36:
+GAS LISTING /tmp/ccIE1J7R.s 			page 7
+
+
+ 277 020c 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 277      E7800000 
+ 278              	.LVL37:
+  45:src/buddyTests.cpp **** 
+  46:src/buddyTests.cpp ****     buddy_free(buddy, adr, 2);
+ 279              		.loc 1 46 5 is_stmt 1
+ 280              		.loc 1 46 15 is_stmt 0
+ 281 0214 13062000 		li	a2,2
+ 282 0218 93050900 		mv	a1,s2
+ 283 021c 13850400 		mv	a0,s1
+ 284 0220 97000000 		call	_Z10buddy_freeP14buddyAllocatorPvm@plt
+ 284      E7800000 
+ 285              	.LVL38:
+  47:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 286              		.loc 1 47 5 is_stmt 1
+ 287              		.loc 1 47 19 is_stmt 0
+ 288 0228 13850400 		mv	a0,s1
+ 289 022c 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 289      E7800000 
+ 290              	.LVL39:
+  48:src/buddyTests.cpp ****     adr = buddy_alloc(buddy, 1);
+ 291              		.loc 1 48 5 is_stmt 1
+ 292              		.loc 1 48 22 is_stmt 0
+ 293 0234 93051000 		li	a1,1
+ 294 0238 13850400 		mv	a0,s1
+ 295 023c 97000000 		call	_Z11buddy_allocP14buddyAllocatorm@plt
+ 295      E7800000 
+ 296              	.LVL40:
+ 297 0244 13090500 		mv	s2,a0
+ 298              	.LVL41:
+  49:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 299              		.loc 1 49 5 is_stmt 1
+ 300              		.loc 1 49 19 is_stmt 0
+ 301 0248 13850400 		mv	a0,s1
+ 302              	.LVL42:
+ 303 024c 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 303      E7800000 
+ 304              	.LVL43:
+  50:src/buddyTests.cpp **** 
+  51:src/buddyTests.cpp ****     buddy_free(buddy, adr2, 3);
+ 305              		.loc 1 51 5 is_stmt 1
+ 306              		.loc 1 51 15 is_stmt 0
+ 307 0254 13063000 		li	a2,3
+ 308 0258 93850900 		mv	a1,s3
+ 309 025c 13850400 		mv	a0,s1
+ 310 0260 97000000 		call	_Z10buddy_freeP14buddyAllocatorPvm@plt
+ 310      E7800000 
+ 311              	.LVL44:
+  52:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 312              		.loc 1 52 5 is_stmt 1
+ 313              		.loc 1 52 19 is_stmt 0
+ 314 0268 13850400 		mv	a0,s1
+ 315 026c 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 315      E7800000 
+ 316              	.LVL45:
+  53:src/buddyTests.cpp ****     buddy_free(buddy, adr, 1);
+ 317              		.loc 1 53 5 is_stmt 1
+GAS LISTING /tmp/ccIE1J7R.s 			page 8
+
+
+ 318              		.loc 1 53 15 is_stmt 0
+ 319 0274 13061000 		li	a2,1
+ 320 0278 93050900 		mv	a1,s2
+ 321 027c 13850400 		mv	a0,s1
+ 322 0280 97000000 		call	_Z10buddy_freeP14buddyAllocatorPvm@plt
+ 322      E7800000 
+ 323              	.LVL46:
+  54:src/buddyTests.cpp ****     printBuddyInfo(buddy);
+ 324              		.loc 1 54 5 is_stmt 1
+ 325              		.loc 1 54 19 is_stmt 0
+ 326 0288 13850400 		mv	a0,s1
+ 327 028c 97000000 		call	_Z14printBuddyInfoP14buddyAllocator@plt
+ 327      E7800000 
+ 328              	.LVL47:
+  55:src/buddyTests.cpp **** }...
+ 329              		.loc 1 55 1
+ 330 0294 83308102 		ld	ra,40(sp)
+ 331              		.cfi_restore 1
+ 332 0298 03340102 		ld	s0,32(sp)
+ 333              		.cfi_restore 8
+ 334              		.cfi_def_cfa 2, 48
+ 335 029c 83348101 		ld	s1,24(sp)
+ 336              		.cfi_restore 9
+ 337              	.LVL48:
+ 338 02a0 03390101 		ld	s2,16(sp)
+ 339              		.cfi_restore 18
+ 340              	.LVL49:
+ 341 02a4 83398100 		ld	s3,8(sp)
+ 342              		.cfi_restore 19
+ 343              	.LVL50:
+ 344 02a8 13010103 		addi	sp,sp,48
+ 345              		.cfi_def_cfa_offset 0
+ 346 02ac 67800000 		jr	ra
+ 347              		.cfi_endproc
+ 348              	.LFE3:
+ 350              	.Letext0:
+ 351              		.file 2 "src/../h/../lib/hw.h"
+ 352              		.file 3 "src/../h/buddyAllocator.hpp"
+GAS LISTING /tmp/ccIE1J7R.s 			page 9
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 buddyTests.cpp
-     /tmp/ccz5wM3U.s:9      .text:0000000000000000 _Z14buddyInitTest1v
-     /tmp/ccz5wM3U.s:13     .text:0000000000000000 .L0 
-     /tmp/ccz5wM3U.s:14     .text:0000000000000000 .L0 
-     /tmp/ccz5wM3U.s:15     .text:0000000000000004 .L0 
-     /tmp/ccz5wM3U.s:18     .text:000000000000000c .L0 
-     /tmp/ccz5wM3U.s:19     .text:000000000000000c .L0 
-     /tmp/ccz5wM3U.s:21     .text:0000000000000010 .L0 
-     /tmp/ccz5wM3U.s:23     .text:0000000000000010 .L0 
-     /tmp/ccz5wM3U.s:24     .text:0000000000000010 .L0 
-     /tmp/ccz5wM3U.s:30     .text:0000000000000028 .L0 
-     /tmp/ccz5wM3U.s:31     .text:0000000000000028 .L0 
-     /tmp/ccz5wM3U.s:34     .text:0000000000000030 .L0 
-     /tmp/ccz5wM3U.s:35     .text:0000000000000034 .L0 
-     /tmp/ccz5wM3U.s:37     .text:0000000000000038 .L0 
-     /tmp/ccz5wM3U.s:38     .text:0000000000000038 .L0 
-     /tmp/ccz5wM3U.s:40     .text:000000000000003c .L0 
-     /tmp/ccz5wM3U.s:42     .text:0000000000000040 .L0 
-     /tmp/ccz5wM3U.s:48     .text:0000000000000040 _Z20buddyOnlyAllocsTest1v
-     /tmp/ccz5wM3U.s:51     .text:0000000000000040 .L0 
-     /tmp/ccz5wM3U.s:52     .text:0000000000000040 .L0 
-     /tmp/ccz5wM3U.s:53     .text:0000000000000044 .L0 
-     /tmp/ccz5wM3U.s:57     .text:0000000000000050 .L0 
-     /tmp/ccz5wM3U.s:58     .text:0000000000000050 .L0 
-     /tmp/ccz5wM3U.s:59     .text:0000000000000050 .L0 
-     /tmp/ccz5wM3U.s:61     .text:0000000000000054 .L0 
-     /tmp/ccz5wM3U.s:63     .text:0000000000000054 .L0 
-     /tmp/ccz5wM3U.s:64     .text:0000000000000054 .L0 
-     /tmp/ccz5wM3U.s:72     .text:0000000000000070 .L0 
-     /tmp/ccz5wM3U.s:73     .text:0000000000000070 .L0 
-     /tmp/ccz5wM3U.s:76     .text:0000000000000078 .L0 
-     /tmp/ccz5wM3U.s:77     .text:0000000000000078 .L0 
-     /tmp/ccz5wM3U.s:82     .text:0000000000000088 .L0 
-     /tmp/ccz5wM3U.s:83     .text:0000000000000088 .L0 
-     /tmp/ccz5wM3U.s:87     .text:0000000000000094 .L0 
-     /tmp/ccz5wM3U.s:88     .text:0000000000000094 .L0 
-     /tmp/ccz5wM3U.s:93     .text:00000000000000a4 .L0 
-     /tmp/ccz5wM3U.s:94     .text:00000000000000a4 .L0 
-     /tmp/ccz5wM3U.s:98     .text:00000000000000b0 .L0 
-     /tmp/ccz5wM3U.s:99     .text:00000000000000b0 .L0 
-     /tmp/ccz5wM3U.s:104    .text:00000000000000c0 .L0 
-     /tmp/ccz5wM3U.s:105    .text:00000000000000c0 .L0 
-     /tmp/ccz5wM3U.s:109    .text:00000000000000cc .L0 
-     /tmp/ccz5wM3U.s:110    .text:00000000000000cc .L0 
-     /tmp/ccz5wM3U.s:115    .text:00000000000000dc .L0 
-     /tmp/ccz5wM3U.s:116    .text:00000000000000dc .L0 
-     /tmp/ccz5wM3U.s:120    .text:00000000000000e8 .L0 
-     /tmp/ccz5wM3U.s:121    .text:00000000000000ec .L0 
-     /tmp/ccz5wM3U.s:123    .text:00000000000000f0 .L0 
-     /tmp/ccz5wM3U.s:124    .text:00000000000000f0 .L0 
-     /tmp/ccz5wM3U.s:126    .text:00000000000000f4 .L0 
-     /tmp/ccz5wM3U.s:129    .text:00000000000000f8 .L0 
-     /tmp/ccz5wM3U.s:131    .text:00000000000000fc .L0 
-     /tmp/ccz5wM3U.s:137    .text:00000000000000fc .L0 
-     /tmp/ccz5wM3U.s:25     .text:0000000000000014 .L0 
-     /tmp/ccz5wM3U.s:65     .text:0000000000000058 .L0 
-GAS LISTING /tmp/ccz5wM3U.s 			page 5
+     /tmp/ccIE1J7R.s:9      .text:0000000000000000 _Z14buddyInitTest1v
+     /tmp/ccIE1J7R.s:13     .text:0000000000000000 .L0 
+     /tmp/ccIE1J7R.s:14     .text:0000000000000000 .L0 
+     /tmp/ccIE1J7R.s:15     .text:0000000000000004 .L0 
+     /tmp/ccIE1J7R.s:18     .text:000000000000000c .L0 
+     /tmp/ccIE1J7R.s:19     .text:000000000000000c .L0 
+     /tmp/ccIE1J7R.s:21     .text:0000000000000010 .L0 
+     /tmp/ccIE1J7R.s:23     .text:0000000000000010 .L0 
+     /tmp/ccIE1J7R.s:24     .text:0000000000000010 .L0 
+     /tmp/ccIE1J7R.s:30     .text:0000000000000028 .L0 
+     /tmp/ccIE1J7R.s:31     .text:0000000000000028 .L0 
+     /tmp/ccIE1J7R.s:34     .text:0000000000000030 .L0 
+     /tmp/ccIE1J7R.s:35     .text:0000000000000034 .L0 
+     /tmp/ccIE1J7R.s:37     .text:0000000000000038 .L0 
+     /tmp/ccIE1J7R.s:38     .text:0000000000000038 .L0 
+     /tmp/ccIE1J7R.s:40     .text:000000000000003c .L0 
+     /tmp/ccIE1J7R.s:42     .text:0000000000000040 .L0 
+     /tmp/ccIE1J7R.s:48     .text:0000000000000040 _Z20buddyOnlyAllocsTest1v
+     /tmp/ccIE1J7R.s:51     .text:0000000000000040 .L0 
+     /tmp/ccIE1J7R.s:52     .text:0000000000000040 .L0 
+     /tmp/ccIE1J7R.s:53     .text:0000000000000044 .L0 
+     /tmp/ccIE1J7R.s:57     .text:0000000000000050 .L0 
+     /tmp/ccIE1J7R.s:58     .text:0000000000000050 .L0 
+     /tmp/ccIE1J7R.s:59     .text:0000000000000050 .L0 
+     /tmp/ccIE1J7R.s:61     .text:0000000000000054 .L0 
+     /tmp/ccIE1J7R.s:63     .text:0000000000000054 .L0 
+     /tmp/ccIE1J7R.s:64     .text:0000000000000054 .L0 
+     /tmp/ccIE1J7R.s:72     .text:0000000000000070 .L0 
+     /tmp/ccIE1J7R.s:73     .text:0000000000000070 .L0 
+     /tmp/ccIE1J7R.s:76     .text:0000000000000078 .L0 
+     /tmp/ccIE1J7R.s:77     .text:0000000000000078 .L0 
+     /tmp/ccIE1J7R.s:82     .text:0000000000000088 .L0 
+     /tmp/ccIE1J7R.s:83     .text:0000000000000088 .L0 
+     /tmp/ccIE1J7R.s:87     .text:0000000000000094 .L0 
+     /tmp/ccIE1J7R.s:88     .text:0000000000000094 .L0 
+     /tmp/ccIE1J7R.s:93     .text:00000000000000a4 .L0 
+     /tmp/ccIE1J7R.s:94     .text:00000000000000a4 .L0 
+     /tmp/ccIE1J7R.s:98     .text:00000000000000b0 .L0 
+     /tmp/ccIE1J7R.s:99     .text:00000000000000b0 .L0 
+     /tmp/ccIE1J7R.s:104    .text:00000000000000c0 .L0 
+     /tmp/ccIE1J7R.s:105    .text:00000000000000c0 .L0 
+     /tmp/ccIE1J7R.s:109    .text:00000000000000cc .L0 
+     /tmp/ccIE1J7R.s:110    .text:00000000000000cc .L0 
+     /tmp/ccIE1J7R.s:115    .text:00000000000000dc .L0 
+     /tmp/ccIE1J7R.s:116    .text:00000000000000dc .L0 
+     /tmp/ccIE1J7R.s:120    .text:00000000000000e8 .L0 
+     /tmp/ccIE1J7R.s:121    .text:00000000000000ec .L0 
+     /tmp/ccIE1J7R.s:123    .text:00000000000000f0 .L0 
+     /tmp/ccIE1J7R.s:124    .text:00000000000000f0 .L0 
+     /tmp/ccIE1J7R.s:126    .text:00000000000000f4 .L0 
+     /tmp/ccIE1J7R.s:129    .text:00000000000000f8 .L0 
+     /tmp/ccIE1J7R.s:131    .text:00000000000000fc .L0 
+     /tmp/ccIE1J7R.s:137    .text:00000000000000fc _Z20buddyOnlyAllocsTest2v
+     /tmp/ccIE1J7R.s:140    .text:00000000000000fc .L0 
+     /tmp/ccIE1J7R.s:141    .text:00000000000000fc .L0 
+GAS LISTING /tmp/ccIE1J7R.s 			page 10
 
 
-     /tmp/ccz5wM3U.s:578    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
-     /tmp/ccz5wM3U.s:952    .debug_str:00000000000001cd .LASF40
-     /tmp/ccz5wM3U.s:910    .debug_str:000000000000007a .LASF41
-     /tmp/ccz5wM3U.s:920    .debug_str:00000000000000c6 .LASF42
-     /tmp/ccz5wM3U.s:5      .text:0000000000000000 .Ltext0
-     /tmp/ccz5wM3U.s:134    .text:00000000000000fc .Letext0
-     /tmp/ccz5wM3U.s:888    .debug_line:0000000000000000 .Ldebug_line0
-     /tmp/ccz5wM3U.s:892    .debug_str:0000000000000005 .LASF0
-     /tmp/ccz5wM3U.s:950    .debug_str:00000000000001ba .LASF1
-     /tmp/ccz5wM3U.s:924    .debug_str:00000000000000f0 .LASF2
-     /tmp/ccz5wM3U.s:916    .debug_str:00000000000000ab .LASF4
-     /tmp/ccz5wM3U.s:908    .debug_str:0000000000000068 .LASF3
-     /tmp/ccz5wM3U.s:898    .debug_str:000000000000002f .LASF5
-     /tmp/ccz5wM3U.s:914    .debug_str:0000000000000098 .LASF6
-     /tmp/ccz5wM3U.s:948    .debug_str:00000000000001a7 .LASF7
-     /tmp/ccz5wM3U.s:962    .debug_str:00000000000002f3 .LASF8
-     /tmp/ccz5wM3U.s:894    .debug_str:0000000000000012 .LASF9
-     /tmp/ccz5wM3U.s:896    .debug_str:0000000000000020 .LASF10
-     /tmp/ccz5wM3U.s:954    .debug_str:0000000000000291 .LASF11
-     /tmp/ccz5wM3U.s:900    .debug_str:0000000000000036 .LASF12
-     /tmp/ccz5wM3U.s:968    .debug_str:000000000000031c .LASF13
-     /tmp/ccz5wM3U.s:922    .debug_str:00000000000000e4 .LASF14
-     /tmp/ccz5wM3U.s:940    .debug_str:000000000000016c .LASF15
-     /tmp/ccz5wM3U.s:930    .debug_str:0000000000000112 .LASF16
-     /tmp/ccz5wM3U.s:928    .debug_str:000000000000010d .LASF17
-     /tmp/ccz5wM3U.s:942    .debug_str:0000000000000182 .LASF18
-     /tmp/ccz5wM3U.s:974    .debug_str:000000000000033e .LASF20
-     /tmp/ccz5wM3U.s:944    .debug_str:000000000000018d .LASF19
-     /tmp/ccz5wM3U.s:972    .debug_str:0000000000000338 .LASF21
-     /tmp/ccz5wM3U.s:890    .debug_str:0000000000000000 .LASF22
-     /tmp/ccz5wM3U.s:906    .debug_str:0000000000000059 .LASF23
-     /tmp/ccz5wM3U.s:970    .debug_str:000000000000032c .LASF24
-     /tmp/ccz5wM3U.s:904    .debug_str:000000000000004f .LASF25
-     /tmp/ccz5wM3U.s:936    .debug_str:0000000000000156 .LASF26
-     /tmp/ccz5wM3U.s:902    .debug_str:0000000000000046 .LASF27
-     /tmp/ccz5wM3U.s:964    .debug_str:0000000000000303 .LASF28
-     /tmp/ccz5wM3U.s:960    .debug_str:00000000000002de .LASF30
-     /tmp/ccz5wM3U.s:956    .debug_str:00000000000002a0 .LASF32
-     /tmp/ccz5wM3U.s:49     .text:0000000000000040 .LFB1
-     /tmp/ccz5wM3U.s:132    .text:00000000000000fc .LFE1
-     /tmp/ccz5wM3U.s:938    .debug_str:0000000000000166 .LASF29
-     /tmp/ccz5wM3U.s:861    .debug_loc:0000000000000000 .LLST1
-     /tmp/ccz5wM3U.s:68     .text:000000000000006c .LVL2
-     /tmp/ccz5wM3U.s:74     .text:0000000000000078 .LVL4
-     /tmp/ccz5wM3U.s:80     .text:0000000000000088 .LVL5
-     /tmp/ccz5wM3U.s:85     .text:0000000000000094 .LVL6
-     /tmp/ccz5wM3U.s:91     .text:00000000000000a4 .LVL7
-     /tmp/ccz5wM3U.s:96     .text:00000000000000b0 .LVL8
-     /tmp/ccz5wM3U.s:102    .text:00000000000000c0 .LVL9
-     /tmp/ccz5wM3U.s:107    .text:00000000000000cc .LVL10
-     /tmp/ccz5wM3U.s:113    .text:00000000000000dc .LVL11
-     /tmp/ccz5wM3U.s:118    .text:00000000000000e8 .LVL12
-     /tmp/ccz5wM3U.s:946    .debug_str:0000000000000198 .LASF31
-     /tmp/ccz5wM3U.s:918    .debug_str:00000000000000b2 .LASF33
-     /tmp/ccz5wM3U.s:10     .text:0000000000000000 .LFB0
-     /tmp/ccz5wM3U.s:43     .text:0000000000000040 .LFE0
-     /tmp/ccz5wM3U.s:868    .debug_loc:0000000000000023 .LLST0
-GAS LISTING /tmp/ccz5wM3U.s 			page 6
+     /tmp/ccIE1J7R.s:142    .text:0000000000000100 .L0 
+     /tmp/ccIE1J7R.s:146    .text:000000000000010c .L0 
+     /tmp/ccIE1J7R.s:147    .text:000000000000010c .L0 
+     /tmp/ccIE1J7R.s:148    .text:000000000000010c .L0 
+     /tmp/ccIE1J7R.s:150    .text:0000000000000110 .L0 
+     /tmp/ccIE1J7R.s:152    .text:0000000000000110 .L0 
+     /tmp/ccIE1J7R.s:153    .text:0000000000000110 .L0 
+     /tmp/ccIE1J7R.s:161    .text:000000000000012c .L0 
+     /tmp/ccIE1J7R.s:162    .text:000000000000012c .L0 
+     /tmp/ccIE1J7R.s:166    .text:0000000000000138 .L0 
+     /tmp/ccIE1J7R.s:170    .text:000000000000013c .L0 
+     /tmp/ccIE1J7R.s:171    .text:0000000000000140 .L0 
+     /tmp/ccIE1J7R.s:172    .text:0000000000000140 .L0 
+     /tmp/ccIE1J7R.s:174    .text:0000000000000144 .L0 
+     /tmp/ccIE1J7R.s:175    .text:0000000000000144 .L0 
+     /tmp/ccIE1J7R.s:177    .text:0000000000000148 .L0 
+     /tmp/ccIE1J7R.s:180    .text:000000000000014c .L0 
+     /tmp/ccIE1J7R.s:184    .text:0000000000000150 .L0 
+     /tmp/ccIE1J7R.s:186    .text:0000000000000150 .L0 
+     /tmp/ccIE1J7R.s:187    .text:0000000000000150 .L0 
+     /tmp/ccIE1J7R.s:192    .text:000000000000015c .L0 
+     /tmp/ccIE1J7R.s:193    .text:0000000000000160 .L0 
+     /tmp/ccIE1J7R.s:199    .text:0000000000000160 _Z19buddyAllocFreeTest1v
+     /tmp/ccIE1J7R.s:202    .text:0000000000000160 .L0 
+     /tmp/ccIE1J7R.s:203    .text:0000000000000160 .L0 
+     /tmp/ccIE1J7R.s:204    .text:0000000000000164 .L0 
+     /tmp/ccIE1J7R.s:210    .text:0000000000000178 .L0 
+     /tmp/ccIE1J7R.s:211    .text:0000000000000178 .L0 
+     /tmp/ccIE1J7R.s:212    .text:0000000000000178 .L0 
+     /tmp/ccIE1J7R.s:213    .text:0000000000000178 .L0 
+     /tmp/ccIE1J7R.s:214    .text:0000000000000178 .L0 
+     /tmp/ccIE1J7R.s:216    .text:000000000000017c .L0 
+     /tmp/ccIE1J7R.s:218    .text:000000000000017c .L0 
+     /tmp/ccIE1J7R.s:219    .text:000000000000017c .L0 
+     /tmp/ccIE1J7R.s:227    .text:0000000000000198 .L0 
+     /tmp/ccIE1J7R.s:228    .text:0000000000000198 .L0 
+     /tmp/ccIE1J7R.s:231    .text:00000000000001a0 .L0 
+     /tmp/ccIE1J7R.s:232    .text:00000000000001a0 .L0 
+     /tmp/ccIE1J7R.s:239    .text:00000000000001b4 .L0 
+     /tmp/ccIE1J7R.s:240    .text:00000000000001b4 .L0 
+     /tmp/ccIE1J7R.s:245    .text:00000000000001c0 .L0 
+     /tmp/ccIE1J7R.s:246    .text:00000000000001c0 .L0 
+     /tmp/ccIE1J7R.s:252    .text:00000000000001d4 .L0 
+     /tmp/ccIE1J7R.s:253    .text:00000000000001d4 .L0 
+     /tmp/ccIE1J7R.s:257    .text:00000000000001e0 .L0 
+     /tmp/ccIE1J7R.s:258    .text:00000000000001e0 .L0 
+     /tmp/ccIE1J7R.s:265    .text:00000000000001f4 .L0 
+     /tmp/ccIE1J7R.s:266    .text:00000000000001f4 .L0 
+     /tmp/ccIE1J7R.s:274    .text:0000000000000208 .L0 
+     /tmp/ccIE1J7R.s:275    .text:0000000000000208 .L0 
+     /tmp/ccIE1J7R.s:280    .text:0000000000000214 .L0 
+     /tmp/ccIE1J7R.s:281    .text:0000000000000214 .L0 
+     /tmp/ccIE1J7R.s:287    .text:0000000000000228 .L0 
+     /tmp/ccIE1J7R.s:288    .text:0000000000000228 .L0 
+     /tmp/ccIE1J7R.s:292    .text:0000000000000234 .L0 
+     /tmp/ccIE1J7R.s:293    .text:0000000000000234 .L0 
+     /tmp/ccIE1J7R.s:300    .text:0000000000000248 .L0 
+GAS LISTING /tmp/ccIE1J7R.s 			page 11
 
 
-     /tmp/ccz5wM3U.s:28     .text:0000000000000028 .LVL0
-     /tmp/ccz5wM3U.s:32     .text:0000000000000030 .LVL1
-     /tmp/ccz5wM3U.s:966    .debug_str:000000000000030a .LASF34
-     /tmp/ccz5wM3U.s:912    .debug_str:000000000000008d .LASF36
-     /tmp/ccz5wM3U.s:958    .debug_str:00000000000002ba .LASF35
-     /tmp/ccz5wM3U.s:926    .debug_str:00000000000000fe .LASF37
-     /tmp/ccz5wM3U.s:932    .debug_str:0000000000000128 .LASF38
-     /tmp/ccz5wM3U.s:934    .debug_str:000000000000014a .LASF39
-     /tmp/ccz5wM3U.s:70     .text:0000000000000070 .LVL3
-     /tmp/ccz5wM3U.s:127    .text:00000000000000f4 .LVL13
-     /tmp/ccz5wM3U.s:138    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccIE1J7R.s:301    .text:0000000000000248 .L0 
+     /tmp/ccIE1J7R.s:306    .text:0000000000000254 .L0 
+     /tmp/ccIE1J7R.s:307    .text:0000000000000254 .L0 
+     /tmp/ccIE1J7R.s:313    .text:0000000000000268 .L0 
+     /tmp/ccIE1J7R.s:314    .text:0000000000000268 .L0 
+     /tmp/ccIE1J7R.s:318    .text:0000000000000274 .L0 
+     /tmp/ccIE1J7R.s:319    .text:0000000000000274 .L0 
+     /tmp/ccIE1J7R.s:325    .text:0000000000000288 .L0 
+     /tmp/ccIE1J7R.s:326    .text:0000000000000288 .L0 
+     /tmp/ccIE1J7R.s:330    .text:0000000000000294 .L0 
+     /tmp/ccIE1J7R.s:331    .text:0000000000000298 .L0 
+     /tmp/ccIE1J7R.s:333    .text:000000000000029c .L0 
+     /tmp/ccIE1J7R.s:334    .text:000000000000029c .L0 
+     /tmp/ccIE1J7R.s:336    .text:00000000000002a0 .L0 
+     /tmp/ccIE1J7R.s:339    .text:00000000000002a4 .L0 
+     /tmp/ccIE1J7R.s:342    .text:00000000000002a8 .L0 
+     /tmp/ccIE1J7R.s:345    .text:00000000000002ac .L0 
+     /tmp/ccIE1J7R.s:347    .text:00000000000002b0 .L0 
+     /tmp/ccIE1J7R.s:353    .text:00000000000002b0 .L0 
+     /tmp/ccIE1J7R.s:25     .text:0000000000000014 .L0 
+     /tmp/ccIE1J7R.s:65     .text:0000000000000058 .L0 
+     /tmp/ccIE1J7R.s:154    .text:0000000000000114 .L0 
+     /tmp/ccIE1J7R.s:220    .text:0000000000000180 .L0 
+     /tmp/ccIE1J7R.s:183    .text:0000000000000150 .L8
+     /tmp/ccIE1J7R.s:168    .text:000000000000013c .L5
+     /tmp/ccIE1J7R.s:1145   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccIE1J7R.s:1593   .debug_str:0000000000000194 .LASF47
+     /tmp/ccIE1J7R.s:1619   .debug_str:0000000000000327 .LASF48
+     /tmp/ccIE1J7R.s:1615   .debug_str:00000000000002fe .LASF49
+     /tmp/ccIE1J7R.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccIE1J7R.s:350    .text:00000000000002b0 .Letext0
+     /tmp/ccIE1J7R.s:1539   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccIE1J7R.s:1601   .debug_str:000000000000029b .LASF0
+     /tmp/ccIE1J7R.s:1585   .debug_str:000000000000015d .LASF1
+     /tmp/ccIE1J7R.s:1577   .debug_str:0000000000000119 .LASF2
+     /tmp/ccIE1J7R.s:1557   .debug_str:000000000000008c .LASF4
+     /tmp/ccIE1J7R.s:1581   .debug_str:000000000000013c .LASF3
+     /tmp/ccIE1J7R.s:1545   .debug_str:0000000000000028 .LASF5
+     /tmp/ccIE1J7R.s:1541   .debug_str:0000000000000000 .LASF6
+     /tmp/ccIE1J7R.s:1569   .debug_str:00000000000000d8 .LASF7
+     /tmp/ccIE1J7R.s:1607   .debug_str:00000000000002bd .LASF8
+     /tmp/ccIE1J7R.s:1553   .debug_str:0000000000000072 .LASF9
+     /tmp/ccIE1J7R.s:1639   .debug_str:00000000000003c3 .LASF10
+     /tmp/ccIE1J7R.s:1573   .debug_str:00000000000000ff .LASF11
+     /tmp/ccIE1J7R.s:1629   .debug_str:0000000000000385 .LASF12
+     /tmp/ccIE1J7R.s:1605   .debug_str:00000000000002ad .LASF13
+     /tmp/ccIE1J7R.s:1587   .debug_str:0000000000000170 .LASF14
+     /tmp/ccIE1J7R.s:1563   .debug_str:00000000000000a4 .LASF15
+     /tmp/ccIE1J7R.s:1611   .debug_str:00000000000002dc .LASF16
+     /tmp/ccIE1J7R.s:1603   .debug_str:00000000000002a8 .LASF17
+     /tmp/ccIE1J7R.s:1625   .debug_str:0000000000000370 .LASF18
+     /tmp/ccIE1J7R.s:1547   .debug_str:000000000000002f .LASF20
+     /tmp/ccIE1J7R.s:1575   .debug_str:000000000000010e .LASF19
+     /tmp/ccIE1J7R.s:1559   .debug_str:0000000000000093 .LASF21
+     /tmp/ccIE1J7R.s:1633   .debug_str:000000000000039c .LASF22
+     /tmp/ccIE1J7R.s:1589   .debug_str:000000000000017c .LASF23
+     /tmp/ccIE1J7R.s:1555   .debug_str:0000000000000080 .LASF24
+GAS LISTING /tmp/ccIE1J7R.s 			page 12
+
+
+     /tmp/ccIE1J7R.s:1627   .debug_str:000000000000037b .LASF25
+     /tmp/ccIE1J7R.s:1635   .debug_str:00000000000003a1 .LASF26
+     /tmp/ccIE1J7R.s:1591   .debug_str:000000000000018b .LASF27
+     /tmp/ccIE1J7R.s:1631   .debug_str:0000000000000395 .LASF28
+     /tmp/ccIE1J7R.s:1571   .debug_str:00000000000000eb .LASF31
+     /tmp/ccIE1J7R.s:1565   .debug_str:00000000000000ba .LASF33
+     /tmp/ccIE1J7R.s:200    .text:0000000000000160 .LFB3
+     /tmp/ccIE1J7R.s:348    .text:00000000000002b0 .LFE3
+     /tmp/ccIE1J7R.s:1597   .debug_str:000000000000027b .LASF29
+     /tmp/ccIE1J7R.s:1445   .debug_loc:0000000000000000 .LLST4
+     /tmp/ccIE1J7R.s:1452   .debug_loc:0000000000000023 .LLST5
+     /tmp/ccIE1J7R.s:1567   .debug_str:00000000000000d3 .LASF30
+     /tmp/ccIE1J7R.s:1479   .debug_loc:00000000000000a5 .LLST6
+     /tmp/ccIE1J7R.s:223    .text:0000000000000194 .LVL22
+     /tmp/ccIE1J7R.s:229    .text:00000000000001a0 .LVL24
+     /tmp/ccIE1J7R.s:235    .text:00000000000001b0 .LVL25
+     /tmp/ccIE1J7R.s:243    .text:00000000000001c0 .LVL28
+     /tmp/ccIE1J7R.s:250    .text:00000000000001d4 .LVL29
+     /tmp/ccIE1J7R.s:255    .text:00000000000001e0 .LVL30
+     /tmp/ccIE1J7R.s:261    .text:00000000000001f0 .LVL31
+     /tmp/ccIE1J7R.s:270    .text:0000000000000204 .LVL34
+     /tmp/ccIE1J7R.s:278    .text:0000000000000214 .LVL37
+     /tmp/ccIE1J7R.s:285    .text:0000000000000228 .LVL38
+     /tmp/ccIE1J7R.s:290    .text:0000000000000234 .LVL39
+     /tmp/ccIE1J7R.s:296    .text:0000000000000244 .LVL40
+     /tmp/ccIE1J7R.s:304    .text:0000000000000254 .LVL43
+     /tmp/ccIE1J7R.s:311    .text:0000000000000268 .LVL44
+     /tmp/ccIE1J7R.s:316    .text:0000000000000274 .LVL45
+     /tmp/ccIE1J7R.s:323    .text:0000000000000288 .LVL46
+     /tmp/ccIE1J7R.s:328    .text:0000000000000294 .LVL47
+     /tmp/ccIE1J7R.s:1579   .debug_str:0000000000000127 .LASF32
+     /tmp/ccIE1J7R.s:1549   .debug_str:0000000000000034 .LASF34
+     /tmp/ccIE1J7R.s:138    .text:00000000000000fc .LFB2
+     /tmp/ccIE1J7R.s:194    .text:0000000000000160 .LFE2
+     /tmp/ccIE1J7R.s:1490   .debug_loc:00000000000000db .LLST2
+     /tmp/ccIE1J7R.s:1501   .debug_loc:0000000000000111 .LLST3
+     /tmp/ccIE1J7R.s:157    .text:0000000000000128 .LVL14
+     /tmp/ccIE1J7R.s:164    .text:0000000000000138 .LVL16
+     /tmp/ccIE1J7R.s:190    .text:000000000000015c .LVL21
+     /tmp/ccIE1J7R.s:1543   .debug_str:0000000000000013 .LASF35
+     /tmp/ccIE1J7R.s:1599   .debug_str:0000000000000281 .LASF36
+     /tmp/ccIE1J7R.s:49     .text:0000000000000040 .LFB1
+     /tmp/ccIE1J7R.s:132    .text:00000000000000fc .LFE1
+     /tmp/ccIE1J7R.s:1512   .debug_loc:0000000000000147 .LLST1
+     /tmp/ccIE1J7R.s:68     .text:000000000000006c .LVL2
+     /tmp/ccIE1J7R.s:74     .text:0000000000000078 .LVL4
+     /tmp/ccIE1J7R.s:80     .text:0000000000000088 .LVL5
+     /tmp/ccIE1J7R.s:85     .text:0000000000000094 .LVL6
+     /tmp/ccIE1J7R.s:91     .text:00000000000000a4 .LVL7
+     /tmp/ccIE1J7R.s:96     .text:00000000000000b0 .LVL8
+     /tmp/ccIE1J7R.s:102    .text:00000000000000c0 .LVL9
+     /tmp/ccIE1J7R.s:107    .text:00000000000000cc .LVL10
+     /tmp/ccIE1J7R.s:113    .text:00000000000000dc .LVL11
+     /tmp/ccIE1J7R.s:118    .text:00000000000000e8 .LVL12
+     /tmp/ccIE1J7R.s:1583   .debug_str:000000000000014e .LASF37
+     /tmp/ccIE1J7R.s:1621   .debug_str:000000000000033a .LASF38
+     /tmp/ccIE1J7R.s:10     .text:0000000000000000 .LFB0
+GAS LISTING /tmp/ccIE1J7R.s 			page 13
+
+
+     /tmp/ccIE1J7R.s:43     .text:0000000000000040 .LFE0
+     /tmp/ccIE1J7R.s:1519   .debug_loc:000000000000016a .LLST0
+     /tmp/ccIE1J7R.s:28     .text:0000000000000028 .LVL0
+     /tmp/ccIE1J7R.s:32     .text:0000000000000030 .LVL1
+     /tmp/ccIE1J7R.s:1637   .debug_str:00000000000003b1 .LASF39
+     /tmp/ccIE1J7R.s:1561   .debug_str:0000000000000099 .LASF41
+     /tmp/ccIE1J7R.s:1551   .debug_str:000000000000004e .LASF40
+     /tmp/ccIE1J7R.s:1609   .debug_str:00000000000002cd .LASF42
+     /tmp/ccIE1J7R.s:1623   .debug_str:000000000000034e .LASF43
+     /tmp/ccIE1J7R.s:1613   .debug_str:00000000000002f2 .LASF44
+     /tmp/ccIE1J7R.s:1595   .debug_str:0000000000000258 .LASF45
+     /tmp/ccIE1J7R.s:1617   .debug_str:000000000000031c .LASF46
+     /tmp/ccIE1J7R.s:225    .text:0000000000000198 .LVL23
+     /tmp/ccIE1J7R.s:337    .text:00000000000002a0 .LVL48
+     /tmp/ccIE1J7R.s:237    .text:00000000000001b4 .LVL26
+     /tmp/ccIE1J7R.s:241    .text:00000000000001b8 .LVL27
+     /tmp/ccIE1J7R.s:263    .text:00000000000001f4 .LVL32
+     /tmp/ccIE1J7R.s:268    .text:00000000000001fc .LVL33
+     /tmp/ccIE1J7R.s:298    .text:0000000000000248 .LVL41
+     /tmp/ccIE1J7R.s:302    .text:000000000000024c .LVL42
+     /tmp/ccIE1J7R.s:340    .text:00000000000002a4 .LVL49
+     /tmp/ccIE1J7R.s:272    .text:0000000000000208 .LVL35
+     /tmp/ccIE1J7R.s:276    .text:000000000000020c .LVL36
+     /tmp/ccIE1J7R.s:343    .text:00000000000002a8 .LVL50
+     /tmp/ccIE1J7R.s:159    .text:000000000000012c .LVL15
+     /tmp/ccIE1J7R.s:178    .text:0000000000000148 .LVL18
+     /tmp/ccIE1J7R.s:182    .text:0000000000000150 .LVL19
+     /tmp/ccIE1J7R.s:167    .text:000000000000013c .LVL17
+     /tmp/ccIE1J7R.s:188    .text:0000000000000154 .LVL20
+     /tmp/ccIE1J7R.s:70     .text:0000000000000070 .LVL3
+     /tmp/ccIE1J7R.s:127    .text:00000000000000f4 .LVL13
+     /tmp/ccIE1J7R.s:354    .debug_info:0000000000000000 .Ldebug_info0
 
 UNDEFINED SYMBOLS
 HEAP_START_ADDR
 _Z10buddy_initPvm
 _Z14printBuddyInfoP14buddyAllocator
 _Z11buddy_allocP14buddyAllocatorm
+_Z10buddy_freeP14buddyAllocatorPvm

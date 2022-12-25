@@ -30,7 +30,7 @@ buddyAllocator* buddy_init(void* addr, size_t numOfBlocks)
     //TODO
     //maybe do it differently, like putting in chunks of power of 2
     for(size_t i = 0;i < numOfBlocks;i++)
-        addBlocks(buddy, (block*)buddy->startAddr + i, 1);
+        addBlocks(buddy, (block*)buddy->startAddr + i, 0);
 
     return buddy;
 }
@@ -84,21 +84,22 @@ void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
     KConsole::trapPrintString("Buddy free: ");
     KConsole::trapPrintInt((size_t)addr,16); KConsole::trapPrintString(" ");
     KConsole::trapPrintInt(numOfBlocks); KConsole::trapPrintString("\n");
-    addBlocks(buddy, addr, numOfBlocks); //adds free blocks
+    size_t level = getDeg2Ceil(numOfBlocks);
+    addBlocks(buddy, addr, level); //adds free blocks
 }
 
-inline size_t getBlockAddr(size_t addr)
+size_t getBlockAddr(size_t addr)
 {
     size_t mask = ((size_t)-1) << BLOCK_SIZE_POWER_2;
     return addr & mask;
 }
-inline size_t getNextBlockAddr(size_t addr)
+size_t getNextBlockAddr(size_t addr)
 {
     size_t currBlock = getBlockAddr(addr);
     return currBlock + BLOCK_SIZE;
 }
 
-inline size_t getDeg2Floor(size_t num)
+size_t getDeg2Floor(size_t num)
 {
     size_t x = 1;
     size_t deg = 0;
@@ -110,7 +111,7 @@ inline size_t getDeg2Floor(size_t num)
     return deg - 1;
 }
 
-inline size_t getDeg2Ceil(size_t num)
+size_t getDeg2Ceil(size_t num)
 {
     size_t x = 1;
     size_t deg = 0;
@@ -125,9 +126,8 @@ inline size_t getDeg2Ceil(size_t num)
 //TODO
 //maybe change it to work with levels instead of numOfBlocks
 //function to add free blocks to the buddy
-void addBlocks(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
+void addBlocks(buddyAllocator* buddy, void* addr, size_t level)
 {
-    size_t level = getDeg2Ceil(numOfBlocks);
     if(level == buddy->maxLevel)
     {
         addBlockToLevel(buddy, addr, level);
@@ -155,8 +155,8 @@ void addBlocks(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
                 else
                     buddy->bucket[level].first = curr->next;
             }
-            if((size_t)addr < buddyBlockAddr) addBlocks(buddy, addr, 1 << (level + 1)); //merge two chunks
-            else addBlocks(buddy, (void*)buddyBlockAddr, 1 << (level + 1)); //merge two chunks
+            if((size_t)addr < buddyBlockAddr) addBlocks(buddy, addr, level + 1); //merge two chunks
+            else addBlocks(buddy, (void*)buddyBlockAddr, level + 1); //merge two chunks
             return;
         }
 

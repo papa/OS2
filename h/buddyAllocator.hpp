@@ -34,10 +34,10 @@ typedef struct buddyAllocator
 buddyAllocator* buddy_init(void* addr, size_t numOfBlocks);
 void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks);
 void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks);
-inline size_t getBlockAddr(size_t addr);
-inline size_t getNextBlockAddr(size_t addr);
-inline size_t getDeg2Floor(size_t num);
-inline size_t getDeg2Ceil(size_t num);
+size_t getBlockAddr(size_t addr);
+size_t getNextBlockAddr(size_t addr);
+size_t getDeg2Floor(size_t num);
+size_t getDeg2Ceil(size_t num);
 void addBlocks(buddyAllocator* buddy, void* addr, size_t numOfBlocks);
 size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level);
 void addBlockToLevel(buddyAllocator* buddy, void* addr, size_t level);
