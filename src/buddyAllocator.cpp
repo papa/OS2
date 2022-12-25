@@ -134,8 +134,8 @@ void addBlocks(buddyAllocator* buddy, void* addr, size_t level)
         return;
     }
     size_t buddyBlockAddr = getBuddyBlockAddr(buddy,addr,level);
-    KConsole::trapPrintString("Buddy block addr ");
-    KConsole::trapPrintInt(buddyBlockAddr, 16); KConsole::trapPrintString("\n");
+    //KConsole::trapPrintString("Buddy block addr ");
+    //KConsole::trapPrintInt(buddyBlockAddr, 16); KConsole::trapPrintString("\n");
     buddyBlock* curr = buddy->bucket[level].first;
     buddyBlock* prev = nullptr;
     while(curr != nullptr)

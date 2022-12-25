@@ -10,6 +10,7 @@
 #include "../h/KConsole.hpp"
 #include "../h/Scheduler.hpp"
 #include "../h/buddyTests.hpp"
+#include "../h/slabTests.hpp"
 
 uint64 Riscv::totalTime = 0;
 bool Riscv::finishSystem = false;
@@ -185,7 +186,8 @@ void Riscv::kernelMain()
     kernelMainCalled = true;
 
     initSystem();
-    buddyOnlyAllocsTest2();
+    slabCacheCreateTest2();
+    //slabInitTest();
     //disableTimerInterrupts();
     //enableInterrupts();
 

@@ -3,7 +3,7 @@
 #include "../h/KConsole.hpp"
 
 #define SLAB_ALLOCATED_LOOKUP 32
-#define CACHE_NAME_SIZE 512
+#define CACHE_NAME_SIZE 64
 #define CACHE_BUFFER_SMALL 5
 #define CACHE_BUFFER_BIG 17
 #define CACHE_BUFFER_SIZE CACHE_BUFFER_BIG - CACHE_BUFFER_SMALL + 1
@@ -52,7 +52,9 @@ void strcpy(const char* src, char* dst)
     {
         *dst = *src;
         src++;
+        dst++;
     }
+    *dst = *src;
 }
 
 slab_allocator_t* slab_allocator_init(buddyAllocator *buddy)
@@ -137,7 +139,7 @@ void putEmptyToPartial(kmem_cache_t* cachep)
 
 void allocateSlab(kmem_cache_t* cachep)
 {
-    slab_t* newSlab = (slab_t*)buddy_alloc(slabAllocator->buddy,cachep->slab_size*BLOCK_SIZE);
+    slab_t* newSlab = (slab_t*)buddy_alloc(slabAllocator->buddy,cachep->slab_size);
     newSlab->next = cachep->slabs_empty;
     if(cachep->slabs_empty != nullptr)
         cachep->slabs_empty->prev = newSlab;
@@ -243,8 +245,9 @@ void removePartialSlab(kmem_cache_t * cachep, slab_t* slab)
 
 void printSlabInfo(slab_t* slab)
 {
+    KConsole::trapPrintString("One slab info---------\n");
     KConsole::trapPrintString("Slab address ");
-    KConsole::trapPrintInt((size_t)slab);KConsole::trapPrintString("\n");
+    KConsole::trapPrintInt((size_t)slab, 16);KConsole::trapPrintString("\n");
     KConsole::trapPrintString("Number of allocated objects ");
     KConsole::trapPrintInt(slab->numOfAllocatedObjects);KConsole::trapPrintString("\n");
     KConsole::trapPrintString("Number of objects ");
@@ -256,7 +259,8 @@ void free_slab_object(slab_t* slab, const void* objp)
     int indexOfObject = ((size_t)objp - sizeof(slab_t) - (size_t)slab) / slab->owner->obj_size;
     if((size_t)objp != (size_t)slab + sizeof(slab_t) + indexOfObject*slab->owner->obj_size) //address not allocated, random address
         return;
-
+    KConsole::trapPrintString("ok je index\n"); KConsole::trapPrintInt(indexOfObject);
+    KConsole::trapPrintString("\n");
     resetAllocatedIndex(slab, indexOfObject);
     if(slab->numOfObjects == slab->numOfAllocatedObjects)
         removeFullSlab(slab->owner, slab);
@@ -265,12 +269,33 @@ void free_slab_object(slab_t* slab, const void* objp)
     slab->numOfAllocatedObjects--;
 }
 
+void printSlabAllocatorInfo()
+{
+    KConsole::trapPrintString("Slab allocator info----------------------------------------------------------\n");
+    KConsole::trapPrintString("Slab allocator buddy address ");
+    KConsole::trapPrintInt((size_t)slabAllocator->buddy,16);KConsole::trapPrintString("\n");
+    KConsole::trapPrintString("Buddy allocator sizeof ");
+    KConsole::trapPrintInt(sizeof(buddyAllocator), 16); KConsole::trapPrintString("\n");
+    KConsole::trapPrintString("Slab allocator address ");
+    KConsole::trapPrintInt((size_t)slabAllocator,16); KConsole::trapPrintString("\n");
+    KConsole::trapPrintString("Cache of caches info\n");
+    kmem_cache_info(&slabAllocator->cacheOfCaches);
+    KConsole::trapPrintString("Caches for buffers\n");
+    for(size_t i = 0;i < CACHE_BUFFER_SIZE;i++)
+    {
+        if(slabAllocator->cachesBuffers[i] != nullptr)
+        {
+            kmem_cache_info(slabAllocator->cachesBuffers[i]);
+        }
+    }
+}
 
 //slab allocator public interface-----------------------------------------------------------------------------
 void kmem_init(void *space, int block_num)
 {
     buddyAllocator* buddy = buddy_init(space, block_num);
     slabAllocator = slab_allocator_init(buddy);
+    //printSlabAllocatorInfo();
 }
 
 kmem_cache_t *kmem_cache_create(const char *name, size_t size,
@@ -287,7 +312,7 @@ kmem_cache_t *kmem_cache_create(const char *name, size_t size,
     strcpy(name, newCache->cacheName);
     newCache->obj_size = size;
     newCache->slab_size = getOptimalSlabSize(size);
-    return nullptr;
+    return newCache;
 }
 
 void *kmem_cache_alloc(kmem_cache_t *cachep)
@@ -322,7 +347,10 @@ void *kmem_cache_alloc(kmem_cache_t *cachep)
 void kmem_cache_free(kmem_cache_t *cachep, void *objp)
 {
     slab_t* slab = findSlab(cachep, objp);
+    KConsole::trapPrintString("Finding slab........\n");
     if(slab == nullptr) return;
+    KConsole::trapPrintString("Found slab ");
+    KConsole::trapPrintInt((size_t)slab, 16); KConsole::trapPrintString("\n");
     free_slab_object(slab, objp);
 }
 
@@ -330,14 +358,14 @@ void kmem_cache_free(kmem_cache_t *cachep, void *objp)
 //what needs to be printed
 void kmem_cache_info(kmem_cache_t *cachep)
 {
-    KConsole::trapPrintString("Kmem Cache Info-------------------\n");
+    KConsole::trapPrintString("Kmem Cache Info-------------------------------------\n");
     KConsole::trapPrintString("Cache Name ");
     KConsole::trapPrintString(cachep->cacheName); KConsole::trapPrintString("\n");
     KConsole::trapPrintString("Cache slab size in blocks ");
     KConsole::trapPrintInt(cachep->slab_size); KConsole::trapPrintString("\n");
     KConsole::trapPrintString("Cache obj size in bytes ");
     KConsole::trapPrintInt(cachep->obj_size); KConsole::trapPrintString("\n");
-    KConsole::trapPrintString("Slabs info----\n");
+    KConsole::trapPrintString("Slabs info-------------------\n");
 
     KConsole::trapPrintString("Full slabs\n");
     slab_t* slab = cachep->slabs_full;
@@ -390,6 +418,7 @@ void kfree(const void *objp)
 
 void destroy_slab_list(slab_t* slab)
 {
+    if(slab == nullptr) return;
     size_t sz = sizeof(slab_t) + slab->numOfObjects*slab->owner->obj_size;
     while(slab != nullptr)
     {
@@ -404,5 +433,5 @@ void kmem_cache_destroy(kmem_cache_t *cachep)
     destroy_slab_list(cachep->slabs_empty);
     destroy_slab_list(cachep->slabs_partial);
     destroy_slab_list(cachep->slabs_full);
-    kmem_cache_free(&slabAllocator->cacheOfCaches,cachep);
+    //kmem_cache_free(&slabAllocator->cacheOfCaches,cachep);
 }
