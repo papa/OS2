@@ -15,6 +15,7 @@ public:
     //or just remove printing for buddy
     static void trapPrintString(const char* string);
     static void trapPrintInt(size_t xx, int base=10, int sgn=0);
+    static void trapPrintStringInt(const char* string, size_t xx, int base = 10);
 private:
     static KSemaphore* hasCharactersInput;
     static KSemaphore* hasCharactersOutput;

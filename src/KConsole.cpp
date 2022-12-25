@@ -172,3 +172,10 @@ void KConsole::trapPrintInt(size_t xx, int base, int sgn)
     while(--i >= 0)
         KConsole::putCharacterOutput(buf[i]);
 }
+
+void KConsole::trapPrintStringInt(const char *string, size_t xx, int base)
+{
+    trapPrintString(string);
+    trapPrintInt(xx,base);
+    trapPrintString("\n");
+}

@@ -28,7 +28,10 @@ void MemoryAllocator::initMemory()
     headAllocated = 0;
     headFree = (BlockHeader*)HEAP_START_ADDR;
     headFree->next = 0;
-    headFree->size = (size_t)((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1 - sizeof(BlockHeader));
+    //TODO
+    //move HEAP START
+    //currently moved by 100 blocks
+    headFree->size = (size_t)((size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR - 100*4096 + 1 - sizeof(BlockHeader));
 }
 
 void MemoryAllocator::insertAllFragment(void *addr, size_t size, void* nxtAddr)

@@ -19,10 +19,11 @@ void slabCacheCreateTest2()
 {
     kmem_init((void*)HEAP_START_ADDR, 15);
     kmem_cache_t * cache = nullptr;
-    for(int i = 1;i<=60;i++)
+    for(int i = 1;i<=68;i++)
     {
         cache = kmem_cache_create("Cache test", 10, nullptr,nullptr);
     }
     printSlabAllocatorInfo();
     kmem_cache_destroy(cache);
+    printSlabAllocatorInfo();
 }
