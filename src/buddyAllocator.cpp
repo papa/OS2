@@ -5,17 +5,17 @@
 
 buddyAllocator* buddy_init(void* addr, size_t numOfBlocks)
 {
-    KConsole::trapPrintString("Buddy initialization\n");
+    //KConsole::trapPrintString("Buddy initialization\n");
     size_t blockAddr = getBlockAddr((size_t)addr); //alling the address
     size_t buddyAddr = (size_t)addr;
-    KConsole::trapPrintInt(blockAddr,16); KConsole::trapPrintString("\n");
-    KConsole::trapPrintInt(buddyAddr,16); KConsole::trapPrintString("\n");
+    //KConsole::trapPrintInt(blockAddr,16); KConsole::trapPrintString("\n");
+    //KConsole::trapPrintInt(buddyAddr,16); KConsole::trapPrintString("\n");
     if((size_t)addr != blockAddr) // if start address not aligned
     {
         buddyAddr = getNextBlockAddr(blockAddr);
         numOfBlocks--; //have to discard one block
     }
-    KConsole::trapPrintStringInt("Buddy metadata address: ", buddyAddr,16);
+    //KConsole::trapPrintStringInt("Buddy metadata address: ", buddyAddr,16);
     numOfBlocks--; // take one block for buddy metadata
     buddyAllocator* buddy = (buddyAllocator*)buddyAddr;
     buddy->startAddr = (void*)getNextBlockAddr(buddyAddr);
@@ -36,15 +36,15 @@ buddyAllocator* buddy_init(void* addr, size_t numOfBlocks)
 
 void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks)
 {
-    KConsole::trapPrintStringInt("Buddy allocation: ", numOfBlocks);
+    //KConsole::trapPrintStringInt("Buddy allocation: ", numOfBlocks);
     size_t level = getDeg2Ceil(numOfBlocks);
-    KConsole::trapPrintStringInt("Level: ", level);
+    //KConsole::trapPrintStringInt("Level: ", level);
     for(size_t i = level; i <= buddy->maxLevel;i++)
     {
         if(buddy->bucket[i].first != nullptr)
         {
             buddyBlock* ret = buddy->bucket[i].first;
-            KConsole::trapPrintStringInt("Found the block:", (size_t)ret,16);
+            //KConsole::trapPrintStringInt("Found the block:", (size_t)ret,16);
             buddy->bucket[i].first = ret->next;
             if(buddy->bucket[i].first == nullptr)
                 buddy->bucket[i].last = nullptr;
@@ -77,8 +77,8 @@ void split(buddyAllocator* buddy, void* addr, size_t finalLevel, size_t currLeve
 //maybe check if address is aligned to start of block
 void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
 {
-    KConsole::trapPrintStringInt("Buddy free: ", (size_t)addr,16);
-    KConsole::trapPrintStringInt("Num of blocks: ", numOfBlocks);
+    //KConsole::trapPrintStringInt("Buddy free: ", (size_t)addr,16);
+    //KConsole::trapPrintStringInt("Num of blocks: ", numOfBlocks);
     size_t level = getDeg2Ceil(numOfBlocks);
     addBlocks(buddy, addr, level); //adds free blocks
 }
@@ -190,22 +190,22 @@ size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level)
 
 void printBuddyInfo(buddyAllocator* buddy)
 {
-    KConsole::trapPrintString("Buddy info-------------------------------------------\n");
-    KConsole::trapPrintStringInt("Buddy starting address ", (size_t)buddy->startAddr, 16);
-    KConsole::trapPrintStringInt("Buddy number of blocks ", buddy->numOfBlocks);
+    //KConsole::trapPrintString("Buddy info-------------------------------------------\n");
+    //KConsole::trapPrintStringInt("Buddy starting address ", (size_t)buddy->startAddr, 16);
+    //KConsole::trapPrintStringInt("Buddy number of blocks ", buddy->numOfBlocks);
     //TODO take care of numOfFreeBlocks
-    KConsole::trapPrintStringInt("Buddy number of free blocks ", buddy->numOfFreeBlocks);
+    //KConsole::trapPrintStringInt("Buddy number of free blocks ", buddy->numOfFreeBlocks);
     for(int i = buddy->maxLevel;i>=0;i--)
     {
-        KConsole::trapPrintStringInt("Level ",i);
-        KConsole::trapPrintString("Free blocks on this level\n");
+        //KConsole::trapPrintStringInt("Level ",i);
+        //KConsole::trapPrintString("Free blocks on this level\n");
         buddyBlock* curr = buddy->bucket[i].first;
         while(curr != 0)
         {
-            KConsole::trapPrintInt((size_t)curr, 16);
-            KConsole::trapPrintString("\n");
+            //KConsole::trapPrintInt((size_t)curr, 16);
+            //KConsole::trapPrintString("\n");
             curr = curr->next;
         }
     }
-    KConsole::trapPrintString("End of buddy info-------------------------------------------\n");
+    //KConsole::trapPrintString("End of buddy info-------------------------------------------\n");
 }

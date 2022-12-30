@@ -26,7 +26,6 @@ PCB::PCB(Body body, void *args, void* stack_space, uint64 timeSlice) :
         (uint64)&PCB::runner
     })
 {
-    //Scheduler::put(this);
     nextPCB = 0;
 }
 
@@ -57,11 +56,13 @@ void PCB::dispatch()
 }
 
 void *PCB::operator new(size_t size) {
-    return MemoryAllocator::kmalloc(size);
+    return kmem_cache_alloc(Riscv::pcbCache);
+    //return MemoryAllocator::kmalloc(size);
 }
 
 void PCB::operator delete(void *p) {
-    MemoryAllocator::kfree(p);
+    kmem_cache_free(Riscv::pcbCache, p);
+    //MemoryAllocator::kfree(p);
 }
 
 PCB::~PCB()

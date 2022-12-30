@@ -20,6 +20,8 @@ extern const void* HEAP_END_ADDR;
 
 static const size_t MEM_BLOCK_SIZE = 64;
 
+static const size_t BLOCK_NUM_OF_BYTES = 4096;
+
 extern const uint64 CONSOLE_STATUS;
 extern const uint64 CONSOLE_TX_DATA;
 extern const uint64 CONSOLE_RX_DATA;

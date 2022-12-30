@@ -7,6 +7,7 @@
 
 #include "../lib/hw.h"
 #include "../test/userMain.hpp"
+#include "slabAllocator.hpp"
 
 class Riscv
 {
@@ -18,6 +19,7 @@ private:
 
     static void initSystem();
     static void endSystem();
+    static void initMemoryAllocation();
 
     static void userMainWrapper(void* p);
 
@@ -98,6 +100,9 @@ private:
     static const uint64 ecallSystemInterupt = bntZero + 9UL;
 
     static uint64 totalTime;
+
+    static kmem_cache_t * pcbCache;
+    static kmem_cache_t* semaphoreCache;
 
     friend class PCB;
     friend class Scheduler;

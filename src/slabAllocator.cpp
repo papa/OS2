@@ -90,7 +90,7 @@ void* allocateObject(slab_t* slab)
     if(addr == nullptr)
         return nullptr;
 
-    KConsole::trapPrintStringInt("Allocated index ",index);
+    //KConsole::trapPrintStringInt("Allocated index ",index);
 
     //TODO
     //implement functions to set bit and check it
@@ -375,6 +375,10 @@ void kmem_cache_info(kmem_cache_t *cachep)
 void *kmalloc(size_t size)
 {
     size_t level = getDeg2Ceil(size);
+    if(level < CACHE_BUFFER_SMALL)
+        level = CACHE_BUFFER_SMALL;
+    if(level > CACHE_BUFFER_BIG)
+        return nullptr;
     size_t index = level - CACHE_BUFFER_SMALL;
     if(slabAllocator->cachesBuffers[index] == nullptr)
         slabAllocator->cachesBuffers[index] = (kmem_cache_t*)kmem_cache_alloc(&slabAllocator->cacheOfCaches);

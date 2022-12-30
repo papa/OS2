@@ -27,7 +27,7 @@ private:
     static void* mem_alloc(size_t size);
     static uint64 mem_free(void* p);
 
-    static void initMemory();
+    static void initMemory(void* startAddr);
 
     static void insertNewAllocatedFragment(void *addr, size_t size);
     static void* tryToAllocateFragment(size_t size);

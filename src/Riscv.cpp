@@ -15,12 +15,41 @@
 uint64 Riscv::totalTime = 0;
 bool Riscv::finishSystem = false;
 bool Riscv::kernelMainCalled = false;
+kmem_cache_t * Riscv::pcbCache = nullptr;
+kmem_cache_t * Riscv::semaphoreCache = nullptr;
+
+void Riscv::initMemoryAllocation()
+{
+    size_t totalNumOfBytes = (size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1;
+    size_t bytesForKernel = totalNumOfBytes / 10; //TODO change this if needed
+    size_t numOfBlocks = (bytesForKernel + BLOCK_NUM_OF_BYTES - 1) / BLOCK_NUM_OF_BYTES;
+
+    void* newStartAddr = (void*)((size_t)HEAP_START_ADDR + numOfBlocks*BLOCK_NUM_OF_BYTES);
+    MemoryAllocator::initMemory(newStartAddr);
+
+    //kmem_init((void*)HEAP_START_ADDR, numOfBlocks);
+    //pcbCache = kmem_cache_create("Cache of PCBs", sizeof(PCB), nullptr, nullptr);
+    //semaphoreCache = kmem_cache_create("Cache of KSemaphore", sizeof(KSemaphore), nullptr, nullptr);
+}
 
 void Riscv::initSystem()
 {
     w_stvec((uint64)&Riscv::supervisorTrap);
+
+    size_t totalNumOfBytes = (size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1;
+    size_t bytesForKernel = totalNumOfBytes / 10; //TODO change this if needed
+    size_t numOfBlocks = (bytesForKernel + BLOCK_NUM_OF_BYTES - 1) / BLOCK_NUM_OF_BYTES;
+    void* newStartAddr = (void*)((size_t)HEAP_START_ADDR + numOfBlocks*BLOCK_NUM_OF_BYTES);
+    MemoryAllocator::initMemory(newStartAddr);
+
+    kmem_init((void*)HEAP_START_ADDR, numOfBlocks);
+    pcbCache = kmem_cache_create("Cache of PCBs", sizeof(PCB), nullptr, nullptr);
+    semaphoreCache = kmem_cache_create("Cache of KSemaphore", sizeof(KSemaphore), nullptr, nullptr);
+
+    //initMemoryAllocation();
     PCB::initialize();
     KConsole::initialize();
+
 }
 
 void Riscv::endSystem()
@@ -186,15 +215,15 @@ void Riscv::kernelMain()
     kernelMainCalled = true;
 
     initSystem();
-    slabCacheCreateTest2();
+    //slabCacheCreateTest2();
     //slabInitTest();
     //disableTimerInterrupts();
-    //enableInterrupts();
+    enableInterrupts();
 
-    /*while(!PCB::userPCB->isFinished())
+    while(!PCB::userPCB->isFinished())
     {
         thread_dispatch();
-    }*/
+    }
 
     //printString("End...\n");
     endSystem();
