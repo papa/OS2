@@ -9,6 +9,9 @@
 
 class MemoryAllocator
 {
+public:
+    static void* kmalloc(size_t size);
+    static uint64 kfree(void* p);
 private:
     typedef struct BlockHeader
     {
@@ -39,9 +42,6 @@ private:
     static void memFreeHandler();
 
     static void insertAllFragment(void* addr, size_t size, void* nxtAddr);
-
-    static void* kmalloc(size_t size);
-    static uint64 kfree(void* p);
 
     friend class PCB;
     friend class Scheduler;

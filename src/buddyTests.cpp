@@ -1,4 +1,6 @@
 #include "../h/buddyTests.hpp"
+#include "../h/KConsole.hpp"
+#include "../h/MemoryAllocator.hpp"
 
 void buddyInitTest1()
 {
@@ -53,3 +55,26 @@ void buddyAllocFreeTest1()
     buddy_free(buddy, adr, 1);
     printBuddyInfo(buddy);
 }
+
+void buddyTestMixa()
+{
+    size_t mask = ((size_t)-1) << 12;
+    buddyAllocator* buddy = (buddyAllocator*)(((size_t)HEAP_START_ADDR & mask) + (1 << 12));
+    void** x = (void**)MemoryAllocator::kmalloc(5000*sizeof(void*));
+    printBuddyInfo(buddy);
+    for(int i = 0; i < 5000;i++)
+    {
+        x[i] = buddy_alloc(buddy, 2);
+        if(x[i] == nullptr)
+        {
+            KConsole::trapPrintStringInt("Bad allocation ", i);
+            for(int j = 0;j < i;j++)
+            {
+                buddy_free(buddy, x[j], 2);
+            }
+            break;
+        }
+    }
+    printBuddyInfo(buddy);
+}
+

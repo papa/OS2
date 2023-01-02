@@ -215,9 +215,9 @@ void Riscv::kernelMain()
     kernelMainCalled = true;
 
     initSystem();
-    //slabCacheCreateTest2();
-    //slabInitTest();
-    //disableTimerInterrupts();
+
+    //buddyTestMixa();
+
     enableInterrupts();
 
     while(!PCB::userPCB->isFinished())
@@ -225,7 +225,6 @@ void Riscv::kernelMain()
         thread_dispatch();
     }
 
-    //printString("End...\n");
     endSystem();
 }
 

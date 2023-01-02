@@ -49,6 +49,7 @@ void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks)
             if(buddy->bucket[i].first == nullptr)
                 buddy->bucket[i].last = nullptr;
             split(buddy, (void*)ret, level, i, true);
+            buddy->numOfFreeBlocks-= (1 << level);
             return ret;
         }
     }
@@ -81,6 +82,7 @@ void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
     //KConsole::trapPrintStringInt("Num of blocks: ", numOfBlocks);
     size_t level = getDeg2Ceil(numOfBlocks);
     addBlocks(buddy, addr, level); //adds free blocks
+    buddy->numOfFreeBlocks += (1 << level);
 }
 
 size_t getBlockAddr(size_t addr)
@@ -118,8 +120,6 @@ size_t getDeg2Ceil(size_t num)
     return deg;
 }
 
-//TODO
-//maybe change it to work with levels instead of numOfBlocks
 //function to add free blocks to the buddy
 void addBlocks(buddyAllocator* buddy, void* addr, size_t level)
 {
@@ -190,22 +190,21 @@ size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level)
 
 void printBuddyInfo(buddyAllocator* buddy)
 {
-    //KConsole::trapPrintString("Buddy info-------------------------------------------\n");
-    //KConsole::trapPrintStringInt("Buddy starting address ", (size_t)buddy->startAddr, 16);
-    //KConsole::trapPrintStringInt("Buddy number of blocks ", buddy->numOfBlocks);
-    //TODO take care of numOfFreeBlocks
-    //KConsole::trapPrintStringInt("Buddy number of free blocks ", buddy->numOfFreeBlocks);
+    KConsole::trapPrintString("Buddy info-------------------------------------------\n");
+    KConsole::trapPrintStringInt("Buddy starting address ", (size_t)buddy->startAddr, 16);
+    KConsole::trapPrintStringInt("Buddy number of blocks ", buddy->numOfBlocks);
+    KConsole::trapPrintStringInt("Buddy number of free blocks ", buddy->numOfFreeBlocks);
     for(int i = buddy->maxLevel;i>=0;i--)
     {
-        //KConsole::trapPrintStringInt("Level ",i);
-        //KConsole::trapPrintString("Free blocks on this level\n");
+        KConsole::trapPrintStringInt("Level ",i);
+        KConsole::trapPrintString("Free blocks on this level\n");
         buddyBlock* curr = buddy->bucket[i].first;
         while(curr != 0)
         {
-            //KConsole::trapPrintInt((size_t)curr, 16);
-            //KConsole::trapPrintString("\n");
+            KConsole::trapPrintInt((size_t)curr, 16);
+            KConsole::trapPrintString("\n");
             curr = curr->next;
         }
     }
-    //KConsole::trapPrintString("End of buddy info-------------------------------------------\n");
+    KConsole::trapPrintString("End of buddy info-------------------------------------------\n");
 }

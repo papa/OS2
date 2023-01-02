@@ -4,7 +4,7 @@
 
 //TODO
 //check values of the constants
-#define SLAB_ALLOCATED_LOOKUP 32
+#define SLAB_ALLOCATED_LOOKUP 128
 #define CACHE_NAME_SIZE 64
 #define CACHE_BUFFER_SMALL 5
 #define CACHE_BUFFER_BIG 17
