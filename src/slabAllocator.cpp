@@ -62,6 +62,33 @@ void strcpy(const char* src, char* dst)
     *dst = *src;
 }
 
+int destroy_slab_list(slab_t** slab)
+{
+    if(slab == nullptr) return 0;
+    size_t sz = (*slab)->owner->slab_size;
+    int totalBlocks = 0;
+    while(*slab != nullptr)
+    {
+        slab_t* nextSlab = (*slab)->next;
+        buddy_free(slabAllocator->buddy, *slab, sz);
+        *slab = nextSlab;
+        totalBlocks+=sz;
+    }
+    return totalBlocks;
+}
+
+void init_cache(kmem_cache_t* cachep, const char* cache_name, size_t slab_size, size_t obj_size, void (*ctor)(void*),void (*dtor)(void*))
+{
+    strcpy(cache_name, cachep->cacheName);
+    cachep->slab_size = slab_size;
+    cachep->obj_size = obj_size;
+    cachep->ctor = ctor;
+    cachep->dtor = dtor;
+
+    cachep->slabs_empty = cachep->slabs_partial = cachep->slabs_full = nullptr;
+    cachep->errors = NO_ERROR;
+}
+
 slab_allocator_t* slab_allocator_init(buddyAllocator *buddy)
 {
     slab_allocator_t* slabAllocatorLocal = (slab_allocator_t*)(buddy + 1);
@@ -70,26 +97,30 @@ slab_allocator_t* slab_allocator_init(buddyAllocator *buddy)
     for(size_t i = 0; i < CACHE_BUFFER_SIZE;i++)
         slabAllocatorLocal->cachesBuffers[i] = nullptr;
 
-    strcpy("Cache of caches", slabAllocatorLocal->cacheOfCaches.cacheName);
-    slabAllocatorLocal->cacheOfCaches.ctor = nullptr;
-    slabAllocatorLocal->cacheOfCaches.dtor = nullptr;
-    slabAllocatorLocal->cacheOfCaches.slabs_empty = nullptr;
-    slabAllocatorLocal->cacheOfCaches.slabs_full = nullptr;
-    slabAllocatorLocal->cacheOfCaches.slabs_partial = nullptr;
-    slabAllocatorLocal->cacheOfCaches.slab_size = CACHE_OF_CACHES_SLAB_SIZE;
-    slabAllocatorLocal->cacheOfCaches.obj_size = sizeof(kmem_cache_t);
-    slabAllocatorLocal->cacheOfCaches.errors = NO_ERROR;
+    init_cache(&slabAllocatorLocal->cacheOfCaches, "Cache of caches", CACHE_OF_CACHES_SLAB_SIZE, sizeof(kmem_cache_t), nullptr,nullptr);
+
     return slabAllocatorLocal;
+}
+
+bool checkSetIndex(slab_t* slab, int index)
+{
+    return (uint8)slab->allocated[index / 8] & (1 << (index%8));
+}
+
+void setAllocatedIndex(slab_t* slab, int index)
+{
+    slab->allocated[index / 8]=(uint8)slab->allocated[index/8] | (1 << (index%8));
 }
 
 void* allocateObject(slab_t* slab)
 {
+    if(slab == nullptr)
+        return nullptr;
     int index = -1;
     void* addr = nullptr;
     for(size_t i = 0;i < slab->numOfObjects;i++)
     {
-        size_t mask = 1 << (i%8);
-        if(!((uint8)slab->allocated[i/8] & mask))
+        if(!checkSetIndex(slab, i))
         {
             addr = (void*)((size_t)slab + sizeof(slab_t)+ i*slab->owner->obj_size);
             index = i;
@@ -101,9 +132,7 @@ void* allocateObject(slab_t* slab)
 
     //KConsole::trapPrintStringInt("Allocated index ",index);
 
-    //TODO
-    //implement functions to set bit and check it
-    slab->allocated[index/8]=(uint8)slab->allocated[index/8] | (1 << (index%8));
+    setAllocatedIndex(slab, index);
     slab->numOfAllocatedObjects++;
 
     return addr;
@@ -121,6 +150,8 @@ bool empty(slab_t* slab)
 
 void insertIntoSlabList(slab_t* slab, slab_t** slab_head)
 {
+    if(slab == nullptr)
+        return;
     slab->prev = nullptr;
     slab->next = *slab_head;
     if(*slab_head != nullptr)
@@ -180,6 +211,7 @@ void allocateSlab(kmem_cache_t* cachep)
         cachep->slabs_empty->prev = newSlab;
     cachep->slabs_empty = newSlab;
     newSlab->prev = nullptr;
+
     newSlab->numOfAllocatedObjects = 0;
     newSlab->owner = cachep;
     size_t sizeInBytes = cachep->slab_size*BLOCK_SIZE;
@@ -187,14 +219,12 @@ void allocateSlab(kmem_cache_t* cachep)
     for(size_t i = 0; i < (newSlab->numOfObjects + 7) / 8;i++)
         newSlab->allocated[i] = 0;
 
-    //TODO
-    //test it
+    //TODO test
     if(cachep->ctor != nullptr)
     {
         for(size_t i = 0;i < newSlab->numOfObjects;i++)
             cachep->ctor((void*)((size_t)newSlab + sizeof(slab_t) + i*newSlab->owner->obj_size));
     }
-
 }
 
 size_t getOptimalSlabSize(size_t obj_size)
@@ -204,7 +234,9 @@ size_t getOptimalSlabSize(size_t obj_size)
         bestSize<<=1;
     size_t optimalWaste = (bestSize - sizeof(slab_t)) % obj_size;
 
-    for(int i = 1;i<=4;i++) //TODO change constants
+    static size_t lowerConst = 1;
+    static size_t highConst = 4;
+    for(size_t i = lowerConst;i<=highConst;i++)
     {
         size_t newSize = bestSize << i;
         size_t newWaste = (newSize - sizeof(slab_t)) % obj_size;
@@ -217,6 +249,16 @@ size_t getOptimalSlabSize(size_t obj_size)
 
     return bestSize / BLOCK_SIZE;
 }
+/*slab_t* findObject(slab_t** slab)
+{
+    slab_t* curr = *slab;
+    while(curr != nullptr)
+    {
+
+    }
+
+    return nullptr;
+}*/
 
 //finds the slab where objp is
 slab_t* findSlab(kmem_cache_t* cachep, const void* objp)
@@ -270,8 +312,9 @@ void free_slab_object(slab_t* slab, const void* objp)
     if((size_t)objp != (size_t)slab + sizeof(slab_t) + indexOfObject*slab->owner->obj_size) //address not allocated, random address
         return;
 
-    //TODO
-    //test if the index was even marked as taken
+    if(!checkSetIndex(slab, indexOfObject))
+        return;
+
     resetAllocatedIndex(slab, indexOfObject);
     if(slab->numOfObjects == slab->numOfAllocatedObjects)
     {
@@ -311,30 +354,24 @@ void kmem_init(void *space, int block_num)
 {
     buddyAllocator* buddy = buddy_init(space, block_num);
     slabAllocator = slab_allocator_init(buddy);
-    //printSlabAllocatorInfo();
 }
 
-//TODO
-//protect everything from nullptrs
 kmem_cache_t *kmem_cache_create(const char *name, size_t size,
                                 void (*ctor)(void *),
                                 void (*dtor)(void *))
 {
     kmem_cache_t* newCache = (kmem_cache_t*)kmem_cache_alloc(&slabAllocator->cacheOfCaches);
-    newCache->slabs_empty = nullptr;
-    newCache->slabs_partial = nullptr;
-    newCache->slabs_full = nullptr;
-    newCache->dtor = dtor;
-    newCache->ctor = ctor;
-    strcpy(name, newCache->cacheName);
-    newCache->obj_size = size;
-    newCache->slab_size = getOptimalSlabSize(size);
-    newCache->errors = NO_ERROR;
+    if(newCache == nullptr)
+        return nullptr;
+    init_cache(newCache, name, getOptimalSlabSize(size), size, ctor,dtor);
     return newCache;
 }
 
 void *kmem_cache_alloc(kmem_cache_t *cachep)
 {
+    if(cachep == nullptr)
+        return nullptr;
+
     if(cachep->slabs_partial != nullptr)
     {
         void* allocatedAddr = allocateObject(cachep->slabs_partial);
@@ -390,10 +427,11 @@ void kmem_cache_free(kmem_cache_t *cachep, void *objp)
     free_slab_object(slab, objp);
 }
 
-//TODO
-//what needs to be printed
+//TODO what needs to be printed
 void kmem_cache_info(kmem_cache_t *cachep)
 {
+    if(cachep == nullptr)
+        return;
     KConsole::trapPrintString("Kmem Cache Info-------------------------------------\n");
     KConsole::trapPrintString("Cache Name ");
     KConsole::trapPrintString(cachep->cacheName); KConsole::trapPrintString("\n");
@@ -438,15 +476,9 @@ void *kmalloc(size_t size)
     if(slabAllocator->cachesBuffers[index] == nullptr)
     {
         slabAllocator->cachesBuffers[index] = (kmem_cache_t*)kmem_cache_alloc(&slabAllocator->cacheOfCaches);
-        slabAllocator->cachesBuffers[index]->slabs_empty = nullptr;
-        slabAllocator->cachesBuffers[index]->slabs_partial = nullptr;
-        slabAllocator->cachesBuffers[index]->slabs_full = nullptr;
-        slabAllocator->cachesBuffers[index]->dtor = nullptr;
-        slabAllocator->cachesBuffers[index]->ctor = nullptr;
-        strcpy("Cache for small buffers", slabAllocator->cachesBuffers[index]->cacheName);
-        slabAllocator->cachesBuffers[index]->obj_size = size;
-        slabAllocator->cachesBuffers[index]->slab_size = getOptimalSlabSize(size);
-        slabAllocator->cachesBuffers[index]->errors = NO_ERROR;
+        if(slabAllocator->cachesBuffers[index] == nullptr)
+            return nullptr;
+        init_cache(slabAllocator->cachesBuffers[index], "Cache for small buffers", getOptimalSlabSize(size), size, nullptr,nullptr);
     }
 
     return kmem_cache_alloc(slabAllocator->cachesBuffers[index]);
@@ -468,21 +500,6 @@ void kfree(const void *objp)
     }
 }
 
-int destroy_slab_list(slab_t* slab)
-{
-    if(slab == nullptr) return 0;
-    size_t sz = slab->owner->slab_size;
-    int totalBlocks = 0;
-    while(slab != nullptr)
-    {
-        slab_t* nextSlab = slab->next;
-        buddy_free(slabAllocator->buddy, slab, sz);
-        slab = nextSlab;
-        totalBlocks+=sz;
-    }
-    return totalBlocks;
-}
-
 void kmem_cache_destroy(kmem_cache_t *cachep)
 {
     if(cachep->slabs_partial != nullptr || cachep->slabs_full != nullptr)
@@ -490,9 +507,9 @@ void kmem_cache_destroy(kmem_cache_t *cachep)
         cachep->errors|=DESTROY_ERROR;
         return;
     }
-    destroy_slab_list(cachep->slabs_empty);
-    destroy_slab_list(cachep->slabs_partial);
-    destroy_slab_list(cachep->slabs_full);
+    destroy_slab_list(&cachep->slabs_empty);
+    destroy_slab_list(&cachep->slabs_partial);
+    destroy_slab_list(&cachep->slabs_full);
     kmem_cache_free(&slabAllocator->cacheOfCaches,cachep);
 }
 
@@ -500,8 +517,7 @@ int kmem_cache_shrink(kmem_cache_t *cachep)
 {
     if(cachep == nullptr)
         return 0;
-    int totalBlocks = destroy_slab_list(cachep->slabs_empty);
-    cachep->slabs_empty = nullptr;
+    int totalBlocks = destroy_slab_list(&cachep->slabs_empty);
     return totalBlocks;
 }
 
