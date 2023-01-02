@@ -10,6 +10,13 @@
 #define CACHE_BUFFER_BIG 17
 #define CACHE_BUFFER_SIZE CACHE_BUFFER_BIG - CACHE_BUFFER_SMALL + 1
 #define CACHE_OF_CACHES_SLAB_SIZE 2
+#define NO_ERROR 0
+#define EXPAND_ERROR 0b1
+#define DESTROY_ERROR 0b10
+#define FREE_ERROR 0b100
+
+//TODO
+//do i need to clear the errors
 
 typedef struct slab_s
 {
@@ -31,6 +38,7 @@ typedef struct kmem_cache_s
     size_t obj_size;
     void (*ctor)(void*);
     void (*dtor)(void*);
+    int errors;
 }kmem_cache_t;
 
 typedef struct slab_allocator_s
@@ -70,6 +78,7 @@ slab_allocator_t* slab_allocator_init(buddyAllocator *buddy)
     slabAllocatorLocal->cacheOfCaches.slabs_partial = nullptr;
     slabAllocatorLocal->cacheOfCaches.slab_size = CACHE_OF_CACHES_SLAB_SIZE;
     slabAllocatorLocal->cacheOfCaches.obj_size = sizeof(kmem_cache_t);
+    slabAllocatorLocal->cacheOfCaches.errors = NO_ERROR;
     return slabAllocatorLocal;
 }
 
@@ -164,6 +173,8 @@ void removePartialSlab(kmem_cache_t * cachep, slab_t* slab)
 void allocateSlab(kmem_cache_t* cachep)
 {
     slab_t* newSlab = (slab_t*)buddy_alloc(slabAllocator->buddy,cachep->slab_size);
+    if(newSlab == nullptr)
+        return;
     newSlab->next = cachep->slabs_empty;
     if(cachep->slabs_empty != nullptr)
         cachep->slabs_empty->prev = newSlab;
@@ -175,6 +186,15 @@ void allocateSlab(kmem_cache_t* cachep)
     newSlab->numOfObjects = (sizeInBytes - sizeof(slab_t)) / cachep->obj_size; // TODO can this param be in cache ?
     for(size_t i = 0; i < (newSlab->numOfObjects + 7) / 8;i++)
         newSlab->allocated[i] = 0;
+
+    //TODO
+    //test it
+    if(cachep->ctor != nullptr)
+    {
+        for(size_t i = 0;i < newSlab->numOfObjects;i++)
+            cachep->ctor((void*)((size_t)newSlab + sizeof(slab_t) + i*newSlab->owner->obj_size));
+    }
+
 }
 
 size_t getOptimalSlabSize(size_t obj_size)
@@ -309,6 +329,7 @@ kmem_cache_t *kmem_cache_create(const char *name, size_t size,
     strcpy(name, newCache->cacheName);
     newCache->obj_size = size;
     newCache->slab_size = getOptimalSlabSize(size);
+    newCache->errors = NO_ERROR;
     return newCache;
 }
 
@@ -336,7 +357,10 @@ void *kmem_cache_alloc(kmem_cache_t *cachep)
     {
         allocateSlab(cachep);
         if(cachep->slabs_empty == nullptr)
+        {
+            cachep->errors|=EXPAND_ERROR;
             return nullptr;
+        }
         void* allocatedAddr = allocateObject(cachep->slabs_empty);
         if(!empty(cachep->slabs_empty))
         {
@@ -355,6 +379,14 @@ void kmem_cache_free(kmem_cache_t *cachep, void *objp)
         return;
     slab_t* slab = findSlab(cachep, objp);
     if(slab == nullptr) return;
+
+    //TODO
+    //test it
+    if(cachep->dtor != nullptr)
+        cachep->dtor(objp);
+    if(cachep->ctor != nullptr)
+        cachep->ctor(objp);
+
     free_slab_object(slab, objp);
 }
 
@@ -414,6 +446,7 @@ void *kmalloc(size_t size)
         strcpy("Cache for small buffers", slabAllocator->cachesBuffers[index]->cacheName);
         slabAllocator->cachesBuffers[index]->obj_size = size;
         slabAllocator->cachesBuffers[index]->slab_size = getOptimalSlabSize(size);
+        slabAllocator->cachesBuffers[index]->errors = NO_ERROR;
     }
 
     return kmem_cache_alloc(slabAllocator->cachesBuffers[index]);
@@ -452,6 +485,11 @@ int destroy_slab_list(slab_t* slab)
 
 void kmem_cache_destroy(kmem_cache_t *cachep)
 {
+    if(cachep->slabs_partial != nullptr || cachep->slabs_full != nullptr)
+    {
+        cachep->errors|=DESTROY_ERROR;
+        return;
+    }
     destroy_slab_list(cachep->slabs_empty);
     destroy_slab_list(cachep->slabs_partial);
     destroy_slab_list(cachep->slabs_full);
@@ -465,4 +503,17 @@ int kmem_cache_shrink(kmem_cache_t *cachep)
     int totalBlocks = destroy_slab_list(cachep->slabs_empty);
     cachep->slabs_empty = nullptr;
     return totalBlocks;
+}
+
+int kmem_cache_error(kmem_cache_t *cachep)
+{
+    if(cachep == nullptr)
+        return 0;
+
+    if(cachep->errors & EXPAND_ERROR)
+        KConsole::trapPrintString("EXPAND ERROR\n");
+    if(cachep->errors & DESTROY_ERROR)
+        KConsole::trapPrintString("DESTROY ERROR");
+
+    return cachep->errors;
 }
