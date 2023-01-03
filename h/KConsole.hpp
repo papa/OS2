@@ -25,7 +25,7 @@ private:
     static uint64 inputTail;
     static uint64 outputTail;
 
-    static const uint64 bufferSize = 8192;
+    static const uint64 bufferSize = 2*8192;
 
     static char inputBuffer[bufferSize];
     static char outputBuffer[bufferSize];

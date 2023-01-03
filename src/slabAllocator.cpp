@@ -4,7 +4,7 @@
 
 //TODO
 //check values of the constants
-#define SLAB_ALLOCATED_LOOKUP 128
+#define SLAB_ALLOCATED_LOOKUP 1024
 #define CACHE_NAME_SIZE 64
 #define CACHE_BUFFER_SMALL 5
 #define CACHE_BUFFER_BIG 17
@@ -64,7 +64,7 @@ void strcpy(const char* src, char* dst)
 
 int destroy_slab_list(slab_t** slab)
 {
-    if(slab == nullptr) return 0;
+    if(*slab == nullptr) return 0;
     size_t sz = (*slab)->owner->slab_size;
     int totalBlocks = 0;
     while(*slab != nullptr)
@@ -217,7 +217,6 @@ void allocateSlab(kmem_cache_t* cachep)
     for(size_t i = 0; i < (newSlab->numOfObjects + 7) / 8;i++)
         newSlab->allocated[i] = 0;
 
-    //TODO test
     if(cachep->ctor != nullptr)
     {
         for(size_t i = 0;i < newSlab->numOfObjects;i++)
@@ -231,6 +230,8 @@ size_t getOptimalSlabSize(size_t obj_size)
     while(bestSize < obj_size + sizeof(slab_t))
         bestSize<<=1;
     size_t optimalWaste = (bestSize - sizeof(slab_t)) % obj_size;
+
+    //return bestSize / BLOCK_SIZE;
 
     static size_t lowerConst = 1;
     static size_t highConst = 4;
@@ -247,16 +248,6 @@ size_t getOptimalSlabSize(size_t obj_size)
 
     return bestSize / BLOCK_SIZE;
 }
-/*slab_t* findObject(slab_t** slab)
-{
-    slab_t* curr = *slab;
-    while(curr != nullptr)
-    {
-
-    }
-
-    return nullptr;
-}*/
 
 //finds the slab where objp is
 slab_t* findSlab(kmem_cache_t* cachep, const void* objp)
@@ -295,11 +286,13 @@ void printSlabInfo(slab_t* slab)
     KConsole::trapPrintStringInt("Slab address ",(size_t)slab,16);
     KConsole::trapPrintStringInt("Number of allocated objects ",slab->numOfAllocatedObjects);
     KConsole::trapPrintStringInt("Number of objects ", slab->numOfObjects);
-    for(size_t i = 0;i < (slab->numOfObjects + 7) / 8;i++)
+    /*for(size_t i = 0;i < (slab->numOfObjects + 7) / 8;i++)
     {
+        KConsole::trapPrintInt(i);
+        KConsole::trapPrintString(" : ");
         KConsole::trapPrintInt((size_t)slab->allocated[i], 16);
         KConsole::trapPrintString("\n");
-    }
+    }*/
 }
 
 void free_slab_object(slab_t* slab, const void* objp)
@@ -313,7 +306,6 @@ void free_slab_object(slab_t* slab, const void* objp)
     if(!checkSetIndex(slab, indexOfObject))
         return;
 
-    //TODO test it
     kmem_cache_t* cachep = slab->owner;
     if(cachep->dtor != nullptr)
         cachep->dtor((void*)objp);
@@ -339,6 +331,7 @@ void free_slab_object(slab_t* slab, const void* objp)
 
 void printSlabAllocatorInfo()
 {
+    KConsole::trapPrintString("\n\n\n\n\n\n\n\n\n");
     KConsole::trapPrintString("Slab allocator info----------------------------------------------------------\n");
     KConsole::trapPrintStringInt("Slab allocator buddy address ", (size_t)slabAllocator->buddy,16);
     KConsole::trapPrintStringInt("Slab allocator address ", (size_t)slabAllocator, 16);
@@ -352,6 +345,7 @@ void printSlabAllocatorInfo()
             kmem_cache_info(slabAllocator->cachesBuffers[i]);
         }
     }
+    KConsole::trapPrintString("\n\n\n\n\n\n\n\n\n");
 }
 
 //slab allocator public interface-----------------------------------------------------------------------------
@@ -430,6 +424,7 @@ void kmem_cache_info(kmem_cache_t *cachep)
 {
     if(cachep == nullptr)
         return;
+    KConsole::trapPrintString("\n\n\n\n\n\n\n\n");
     KConsole::trapPrintString("Kmem Cache Info-------------------------------------\n");
     KConsole::trapPrintString("Cache Name ");
     KConsole::trapPrintString(cachep->cacheName); KConsole::trapPrintString("\n");
@@ -461,6 +456,8 @@ void kmem_cache_info(kmem_cache_t *cachep)
         printSlabInfo(slab);
         slab = slab->next;
     }
+
+    KConsole::trapPrintString("\n\n\n\n\n\n\n\n");
 }
 
 void *kmalloc(size_t size)
@@ -470,6 +467,7 @@ void *kmalloc(size_t size)
         level = CACHE_BUFFER_SMALL;
     if(level > CACHE_BUFFER_BIG)
         return nullptr;
+    size = (1 << level);
     size_t index = level - CACHE_BUFFER_SMALL;
     if(slabAllocator->cachesBuffers[index] == nullptr)
     {
@@ -500,11 +498,11 @@ void kfree(const void *objp)
 
 void kmem_cache_destroy(kmem_cache_t *cachep)
 {
-    if(cachep->slabs_partial != nullptr || cachep->slabs_full != nullptr)
-    {
-        cachep->errors|=DESTROY_ERROR;
-        return;
-    }
+    //if(cachep->slabs_partial != nullptr || cachep->slabs_full != nullptr)
+    //{
+    //    cachep->errors|=DESTROY_ERROR;
+    //    return;
+    //}
     destroy_slab_list(&cachep->slabs_empty);
     destroy_slab_list(&cachep->slabs_partial);
     destroy_slab_list(&cachep->slabs_full);
