@@ -53,7 +53,7 @@ Thread::Thread(void (*body)(void *), void *args)
 
 Thread::Thread()
 {
-    myHandle = 0;
+    myHandle = nullptr;
     thread_make_pcb(&myHandle, &Thread::runner, (void*)this);
 }
 

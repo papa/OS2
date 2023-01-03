@@ -216,16 +216,15 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    testOS2();
+    //testOS2();
 
-    //buddyTestMixa();
 
-    //enableInterrupts();
+    enableInterrupts();
 
-    //while(!PCB::userPCB->isFinished())
-    //{
-    //    thread_dispatch();
-    //}
+    while(!PCB::userPCB->isFinished())
+    {
+        thread_dispatch();
+    }
 
     endSystem();
 }
