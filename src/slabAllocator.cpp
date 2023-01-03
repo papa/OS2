@@ -130,8 +130,6 @@ void* allocateObject(slab_t* slab)
     if(addr == nullptr)
         return nullptr;
 
-    //KConsole::trapPrintStringInt("Allocated index ",index);
-
     setAllocatedIndex(slab, index);
     slab->numOfAllocatedObjects++;
 
@@ -315,6 +313,13 @@ void free_slab_object(slab_t* slab, const void* objp)
     if(!checkSetIndex(slab, indexOfObject))
         return;
 
+    //TODO test it
+    kmem_cache_t* cachep = slab->owner;
+    if(cachep->dtor != nullptr)
+        cachep->dtor((void*)objp);
+    if(cachep->ctor != nullptr)
+        cachep->ctor((void*)objp);
+
     resetAllocatedIndex(slab, indexOfObject);
     if(slab->numOfObjects == slab->numOfAllocatedObjects)
     {
@@ -416,13 +421,6 @@ void kmem_cache_free(kmem_cache_t *cachep, void *objp)
         return;
     slab_t* slab = findSlab(cachep, objp);
     if(slab == nullptr) return;
-
-    //TODO
-    //test it
-    if(cachep->dtor != nullptr)
-        cachep->dtor(objp);
-    if(cachep->ctor != nullptr)
-        cachep->ctor(objp);
 
     free_slab_object(slab, objp);
 }
