@@ -218,7 +218,10 @@ void MemoryAllocator::memAllocHandler()
     __asm__ volatile("mv %0, a1" : "=r"(size));
     size*=MEM_BLOCK_SIZE;
     void* allocatedAddr = kmalloc(size);
-    __asm__ volatile("mv a0,%0" : : "r"((uint64)allocatedAddr));
+    if(allocatedAddr == nullptr)
+        __asm__ volatile("li a0, 0x0");
+    else
+        __asm__ volatile("mv a0,%0" : : "r"((uint64)allocatedAddr));
     Riscv::w_a0_sscratch();
 }
 

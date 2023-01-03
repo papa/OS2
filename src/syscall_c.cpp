@@ -17,6 +17,9 @@ void* mem_alloc(size_t size)
     uint64 allocatedAddr = 0x01;
     __asm__ volatile("mv %0, a0" : "=r"(allocatedAddr));
 
+    if(allocatedAddr == 0)
+        return nullptr;
+
     return (void*)allocatedAddr;
 }
 
@@ -43,15 +46,14 @@ int thread_create(thread_t* handle, void (*start_routine)(void*), void* args)
     uint64 argsLocal = (uint64)args;
     uint64 opLocal = 0x11;
 
-    void * stack_space = mem_alloc(DEFAULT_STACK_SIZE);
-    uint64 stackPointerLocal = (uint64)stack_space;
-    //todo
-    //handle this error
-    if(stack_space == 0)
-        return -1;
+    //void * stack_space = mem_alloc(DEFAULT_STACK_SIZE);
+    //uint64 stackPointerLocal = (uint64)stack_space;
+    //if(stack_space == 0)
+    //    return -1;
 
     //initialize registers
-    __asm__ volatile("mv a4, %0" :  : "r"((uint64)stackPointerLocal));
+    //__asm__ volatile("mv a4, %0" :  : "r"((uint64)stackPointerLocal));
+    __asm__ volatile("mv a4, %0" :  : "r"((uint64)1));
     __asm__ volatile("mv a3, %0" :  : "r"((uint64)argsLocal));
     __asm__ volatile("mv a2, %0" :  : "r"((uint64)startRLocal));
     __asm__ volatile("mv a1, %0" :  : "r"((uint64)handleLocal));
@@ -165,13 +167,14 @@ int thread_make_pcb(thread_t* handle, void(*start_routine)(void*), void *arg)
     uint64 argsLocal = (uint64)arg;
     uint64 opLocal = 0x14;
 
-    void * stack_space = mem_alloc(DEFAULT_STACK_SIZE);
-    uint64 stackPointerLocal = (uint64)stack_space;
-    if(stack_space == 0)
-        return -1;
+    //void * stack_space = mem_alloc(DEFAULT_STACK_SIZE);
+    //uint64 stackPointerLocal = (uint64)stack_space;
+    //if(stack_space == 0)
+    //    return -1;
 
     //initialize registers
-    __asm__ volatile("mv a4, %0" :  : "r"((uint64)stackPointerLocal));
+    //__asm__ volatile("mv a4, %0" :  : "r"((uint64)stackPointerLocal));
+    __asm__ volatile("mv a4, %0" :  : "r"((uint64)1));
     __asm__ volatile("mv a3, %0" :  : "r"((uint64)argsLocal));
     __asm__ volatile("mv a2, %0" :  : "r"((uint64)startRLocal));
     __asm__ volatile("mv a1, %0" :  : "r"((uint64)handleLocal));

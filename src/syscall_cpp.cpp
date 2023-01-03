@@ -25,13 +25,12 @@ void operator delete(void * p)
 //Thread
 int Thread::start()
 {
-    if(myHandle != 0)
+    if(myHandle != nullptr)
     {
         return thread_start(myHandle);
     }
     else
     {
-        //todo
         return -1;
     }
 
@@ -48,7 +47,7 @@ void Thread::sleep(time_t time)
 
 Thread::Thread(void (*body)(void *), void *args)
 {
-    myHandle = 0;
+    myHandle = nullptr;
     thread_make_pcb(&myHandle, body, args);
 }
 
@@ -73,7 +72,7 @@ Thread::~Thread()
 
 int Semaphore::wait()
 {
-    if(myHandle == 0)
+    if(myHandle == nullptr)
         return -1;
     return sem_wait(myHandle);
 }
@@ -83,13 +82,13 @@ Semaphore::Semaphore(unsigned int init)
     int retval = sem_open(&myHandle, init);
     if(retval != 0)
     {
-        myHandle = 0;
+        myHandle = nullptr;
     }
 }
 
 int Semaphore::signal()
 {
-    if(myHandle == 0)
+    if(myHandle == nullptr)
         return -1;
     return sem_signal(myHandle);
 }

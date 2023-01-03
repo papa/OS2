@@ -131,12 +131,27 @@ void PCB::threadCreateHandler()
     __asm__ volatile("mv %0, a2" : "=r"(start_routine));
     __asm__ volatile("mv %0, a3" : "=r"(args));
 
-    PCB *newPCB = new PCB((void (*)(void *)) start_routine, (void *) args, (void *) PCB::savedRegA4, DEFAULT_TIME_SLICE);
+    void* stack_space = kmalloc(DEFAULT_STACK_SIZE);
+    if(stack_space == nullptr)
+    {
+        (*threadHandle) = nullptr;
+        kfree(stack_space);
+        __asm__ volatile("li a0, 0x01");
+        Riscv::w_a0_sscratch();
+        return;
+    }
+
+    PCB *newPCB = new PCB((void (*)(void *)) start_routine, (void *) args,
+                          stack_space,
+                          //(void *) PCB::savedRegA4,
+                          DEFAULT_TIME_SLICE);
 
     (*threadHandle) = newPCB;
 
-    if (newPCB == 0)
-            __asm__ volatile("li a0, 0xffffffffffffffff");
+    if (newPCB == 0) {
+        kfree(stack_space);
+        __asm__ volatile("li a0, 0x01");
+    }
     else
     {
         newPCB->start();
@@ -149,14 +164,14 @@ void PCB::threadStartHandler()
 {
     PCB* pcb;
     __asm__ volatile("mv %0, a1" : "=r"(pcb));
-    if(pcb != 0)
+    if(pcb != nullptr)
     {
         pcb->start();
         __asm__ volatile("li a0, 0");
     }
     else
     {
-        __asm__ volatile("li a0, 0xffffffffffffffff");
+        __asm__ volatile("li a0, 0x01");
     }
     Riscv::w_a0_sscratch();
 }
@@ -170,12 +185,28 @@ void PCB::threadMakePCBHandler()
     __asm__ volatile("mv %0, a2" : "=r"(start_routine));
     __asm__ volatile("mv %0, a3" : "=r"(args));
 
-    PCB *newPCB = new PCB((void (*)(void *)) start_routine, (void *) args, (void *) PCB::savedRegA4, DEFAULT_TIME_SLICE);
+    void* stack_space = kmalloc(DEFAULT_STACK_SIZE);
+    if(stack_space == nullptr)
+    {
+        (*threadHandle) = nullptr;
+        kfree(stack_space);
+        __asm__ volatile("li a0, 0x01");
+        Riscv::w_a0_sscratch();
+        return;
+    }
+
+    PCB *newPCB = new PCB((void (*)(void *)) start_routine, (void *) args,
+                          stack_space,
+                          //(void *) PCB::savedRegA4,
+                          DEFAULT_TIME_SLICE);
 
     (*threadHandle) = newPCB;
 
-    if (newPCB == 0)
-        __asm__ volatile("li a0, 0xffffffffffffffff");
+    if (newPCB == nullptr)
+    {
+        kfree(stack_space);
+        __asm__ volatile("li a0, 0x01");
+    }
     else
         __asm__ volatile("li a0, 0");
     Riscv::w_a0_sscratch();
@@ -185,7 +216,7 @@ void PCB::threadDelPCBHandler()
 {
     PCB* pcb;
     __asm__ volatile("mv %0, a1" : "=r"(pcb));
-    if(pcb != 0)
+    if(pcb != nullptr)
     {
         delete pcb;
         __asm__ volatile("li a0, 0x0");
