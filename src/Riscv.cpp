@@ -17,6 +17,8 @@ bool Riscv::finishSystem = false;
 bool Riscv::kernelMainCalled = false;
 kmem_cache_t * Riscv::pcbCache = nullptr;
 kmem_cache_t * Riscv::semaphoreCache = nullptr;
+void* Riscv::mainPMT = nullptr;
+void* Riscv::riscvBuddy = nullptr;
 
 void Riscv::initMemoryAllocation()
 {
@@ -32,12 +34,24 @@ void Riscv::initMemoryAllocation()
     //semaphoreCache = kmem_cache_create("Cache of KSemaphore", sizeof(KSemaphore), nullptr, nullptr);
 }
 
+void Riscv::initVirtualMemory()
+{
+    //size_t addr = (size_t)getNextBlockAddr((size_t)HEAP_START_ADDR);
+
+    //size_t pmtSize = (1 << 9);
+    //size_t descSize = 64;
+    //size_t
+
+}
+
 void Riscv::initSystem()
 {
     w_stvec((uint64)&Riscv::supervisorTrap);
 
+    riscvBuddy = (void*)getNextBlockAddr((size_t)HEAP_START_ADDR);
+
     size_t totalNumOfBytes = (size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1;
-    size_t bytesForKernel = totalNumOfBytes / 10; //TODO change this if needed
+    size_t bytesForKernel = totalNumOfBytes / 6; //TODO change this if needed
     size_t numOfBlocks = (bytesForKernel + BLOCK_NUM_OF_BYTES - 1) / BLOCK_NUM_OF_BYTES;
     void* newStartAddr = (void*)((size_t)HEAP_START_ADDR + numOfBlocks*BLOCK_NUM_OF_BYTES);
     MemoryAllocator::initMemory(newStartAddr);
@@ -50,6 +64,56 @@ void Riscv::initSystem()
     PCB::initialize();
     KConsole::initialize();
 
+    //KConsole::trapPrintStringInt("Buddy allocator: ", (size_t)riscvBuddy, 16);
+    //printSlabAllocatorInfo();
+    mainPMT = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+    for(size_t i = 0; i < (1 << 9);i++)
+        ((size_t*)mainPMT)[i] = 0;
+
+    KConsole::trapPrintStringInt("main PMT ", (size_t)mainPMT,16);
+
+    //printBuddyInfo((buddyAllocator*)riscvBuddy);
+
+    //for(int i = 0; i < 20;i++)
+    //    buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+
+    for(size_t addr = 0x80000000; addr < (size_t)HEAP_START_ADDR;addr++)
+        addVirtualAddrInstr(addr);
+
+    /*size_t x = (((size_t*)mainPMT)[2] >> 10) << 12;
+    x = (((size_t*)x)[0] >> 10) << 12;
+    for(int i = 0;i < 512;i++)
+    {
+        KConsole::trapPrintStringInt("i ", i);
+        KConsole::trapPrintInt(((size_t*)x)[i], 16);
+        KConsole::trapPrintString("\n");
+        //size_t x = ((size_t*)x)[i] >> 10)) << 12;
+        KConsole::trapPrintInt((((size_t*)x)[i] >> 10) << 12, 16);
+        KConsole::trapPrintString("\n");
+
+    }*/
+
+    //printBuddyInfo((buddyAllocator*)riscvBuddy);
+
+    for(size_t addr = (size_t)HEAP_START_ADDR;addr < (size_t)HEAP_END_ADDR;addr+=4096)
+        addVirtualAddr(addr);
+
+    //KConsole::trapPrintStringInt("Num of blocks ", numOfBlocks);
+    //size_t x = (size_t)HEAP_START_ADDR - 0x80000000;
+    //x/=BLOCK_SIZE;
+    //KConsole::trapPrintStringInt("X ", x);
+    //x/=BLOCK_SIZE;
+    //KConsole::trapPrintStringInt("x2 ", x);
+
+    addVirtualAddr((size_t)CONSOLE_RX_DATA);
+    addVirtualAddr((size_t)CONSOLE_TX_DATA);
+    addVirtualAddr((size_t)CONSOLE_STATUS);
+    addVirtualAddr(0xc201004);
+
+
+    //Riscv::w_sstatus()
+    size_t satp = ((size_t)1 << 63) | ((size_t)mainPMT / BLOCK_SIZE);
+    __asm__ volatile("csrw satp, %0" : :"r"(satp));
 }
 
 void Riscv::endSystem()
@@ -87,6 +151,62 @@ void Riscv::popSppSpie()
     __asm__ volatile ("sret");
 }
 
+void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
+{
+    size_t l2 = addr >> 30;
+    size_t l1 = (addr >> 21) & (0x1ff);
+    size_t l0 = (addr >> 12) & (0x1ff);
+    //size_t offset = addr & 0xfff;
+    size_t pmt2Desc = ((size_t*)mainPMT)[l2];
+    void* pmt1 = nullptr;
+    if(pmt2Desc == 0)
+    {
+        pmt1 = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+        for(int i = 0; i < (1 << 9);i++)
+        {
+            ((size_t*)pmt1)[i] = 0;
+        }
+        size_t newDesc = (((size_t)pmt1 >> 12) << 10) | mask;
+        ((size_t*)mainPMT)[l2] = newDesc;
+    }
+    else
+    {
+        pmt1 = (void*)((pmt2Desc >> 10) << 12);
+    }
+    size_t pmt1Desc = ((size_t*)pmt1)[l1];
+    void* pmt0 = nullptr;
+    if(pmt1Desc == 0)
+    {
+        pmt0 = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+        for(int i = 0; i < (1 << 9);i++)
+        {
+            ((size_t*)pmt0)[i] = 0;
+        }
+        size_t newDesc = (((size_t)pmt0 >> 12) << 10) | mask;
+        ((size_t*)pmt1)[l1] = newDesc;
+    }
+    else
+    {
+        pmt0 = (void*)((pmt1Desc >> 10) << 12);
+    }
+
+    size_t pmt0Desc = ((size_t*)pmt0)[l0];
+    if(pmt0Desc == 0)
+    {
+        ((size_t*)pmt0)[l0] = ((addr >> 12) << 10) | maskLeaf;
+    }
+}
+
+void Riscv::addVirtualAddr(size_t addr)
+{
+    setVirtualAddr(addr, 0x0, 0xf);
+}
+
+void Riscv::addVirtualAddrInstr(size_t addr)
+{
+    setVirtualAddr(addr, 0x0, 0xf);
+}
+
 void Riscv::handleSupervisorTrap()
 {
     __asm__ volatile("mv %0, a4" : "=r"(PCB::savedRegA4));
@@ -94,8 +214,31 @@ void Riscv::handleSupervisorTrap()
 
     uint64 scause = Riscv::r_scause();
 
+    static const size_t storePF = 15;
+    static const size_t loadPF = 13;
+    static const size_t instrPF = 12;
+
     switch(scause)
     {
+        case storePF:
+        {
+            size_t addrPF = 0;
+            __asm__ volatile("csrr %0, stval":"=r"(addrPF));
+            addVirtualAddr(addrPF);
+        }
+        case loadPF:
+        {
+            size_t addrPF = 0;
+            __asm__ volatile("csrr %0, stval":"=r"(addrPF));
+            addVirtualAddr(addrPF);
+        }
+        case instrPF:
+        {
+            //KConsole::trapPrintString("instr PF\n");
+            size_t addrPF = 0;
+            __asm__ volatile("csrr %0, stval":"=r"(addrPF));
+            addVirtualAddrInstr(addrPF);
+        }
         case timerInterrupt:
         {
             //KConsole::trapPrintString("timerInterrupt\n");

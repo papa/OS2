@@ -17,6 +17,15 @@ private:
     static bool kernelMainCalled;
     static void changePrivMode();
 
+    static void* mainPMT;
+    static void* riscvBuddy;
+
+    static void addVirtualAddr(size_t addr);
+    static void addVirtualAddrInstr(size_t addr);
+    static void setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf);
+
+    static void initVirtualMemory();
+
     static void initSystem();
     static void endSystem();
     static void initMemoryAllocation();
