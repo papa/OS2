@@ -112,7 +112,7 @@ void Riscv::initSystem()
 
 
     //Riscv::w_sstatus()
-    size_t satp = ((size_t)1 << 63) | ((size_t)mainPMT / BLOCK_SIZE);
+    size_t satp = ((size_t)1 << 63) | ((size_t)mainPMT >> 12);
     __asm__ volatile("csrw satp, %0" : :"r"(satp));
 }
 
@@ -199,12 +199,12 @@ void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
 
 void Riscv::addVirtualAddr(size_t addr)
 {
-    setVirtualAddr(addr, 0x0, 0xf);
+    setVirtualAddr(addr, 0x1, 0xf);
 }
 
 void Riscv::addVirtualAddrInstr(size_t addr)
 {
-    setVirtualAddr(addr, 0x0, 0xf);
+    setVirtualAddr(addr, 0x1, 0xf);
 }
 
 void Riscv::handleSupervisorTrap()
@@ -359,15 +359,14 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    //testOS2();
+    testOS2();
 
+    //enableInterrupts();
 
-    enableInterrupts();
-
-    while(!PCB::userPCB->isFinished())
-    {
-        thread_dispatch();
-    }
+    //while(!PCB::userPCB->isFinished())
+    //{
+    //    thread_dispatch();
+    //}
 
     endSystem();
 }

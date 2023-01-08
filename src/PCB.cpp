@@ -82,11 +82,11 @@ void PCB::initialize()
                               DEFAULT_TIME_SLICE);
     PCB::consolePCB->systemThread = true;
     PCB::consolePCB->start();
-    PCB::userPCB = new PCB(&Riscv::userMainWrapper, 0,
-                           //kmalloc(DEFAULT_STACK_SIZE),
-                           MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
-                           DEFAULT_TIME_SLICE);
-    PCB::userPCB->start();
+    //PCB::userPCB = new PCB(&Riscv::userMainWrapper, 0,
+    //                       //kmalloc(DEFAULT_STACK_SIZE),
+    //                       MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
+    //                       DEFAULT_TIME_SLICE);
+    //PCB::userPCB->start();
 }
 
 bool PCB::isFinished()
