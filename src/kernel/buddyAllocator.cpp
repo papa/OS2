@@ -1,5 +1,5 @@
-#include "../h/buddyAllocator.hpp"
-#include "../h/KConsole.hpp"
+#include "../../h/buddyAllocator.hpp"
+#include "../../h/KConsole.hpp"
 
 #define BLOCK_SIZE 4096
 

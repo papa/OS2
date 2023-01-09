@@ -2,9 +2,9 @@
 // Created by os on 4/27/22.
 //
 
-#include "../h/Scheduler.hpp"
-#include "../h/PCB.hpp"
-#include "../h/KConsole.hpp"
+#include "../../h/Scheduler.hpp"
+#include "../../h/PCB.hpp"
+#include "../../h/KConsole.hpp"
 
 PCB* Scheduler::schedulerPCBHead = 0;
 PCB* Scheduler::schedulerPCBTail = 0;

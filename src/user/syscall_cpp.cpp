@@ -2,7 +2,7 @@
 // Created by os on 4/8/22.
 //
 
-#include "../h/syscall_cpp.hpp"
+#include "../../h/syscall_cpp.hpp"
 
 struct ArgsPeriodic
 {

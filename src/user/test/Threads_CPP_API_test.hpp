@@ -1,7 +1,7 @@
 #ifndef XV6_THREADS_CPP_API_TEST_HPP
 #define XV6_THREADS_CPP_API_TEST_HPP
 
-#include "../h/syscall_cpp.hpp"
+#include "../../../h/syscall_cpp.hpp"
 #include "printing.hpp"
 
 bool finishedA = false;

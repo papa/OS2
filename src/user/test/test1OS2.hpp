@@ -6,7 +6,7 @@
 #define OS2_TEST1OS2_H
 
 #include "printing.hpp"
-#include "../h/syscall_cpp.hpp"
+#include "../../../h/syscall_cpp.hpp"
 
 struct thread_data {
     int id;

@@ -1,5 +1,5 @@
-#include "../h/slabTests.hpp"
-#include "../h/KConsole.hpp"
+#include "../../h/slabTests.hpp"
+#include "../../h/KConsole.hpp"
 
 void slabInitTest()
 {

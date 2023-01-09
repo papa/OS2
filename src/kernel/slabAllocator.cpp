@@ -1,6 +1,6 @@
-#include "../h/slabAllocator.hpp"
-#include "../h/buddyAllocator.hpp"
-#include "../h/KConsole.hpp"
+#include "../../h/slabAllocator.hpp"
+#include "../../h/buddyAllocator.hpp"
+#include "../../h/KConsole.hpp"
 
 //TODO
 //check values of the constants

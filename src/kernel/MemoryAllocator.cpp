@@ -2,9 +2,9 @@
 // Created by os on 4/27/22.
 //
 
-#include "../h/MemoryAllocator.hpp"
-#include "../h/Riscv.hpp"
-#include "../h/KConsole.hpp"
+#include "../../h/MemoryAllocator.hpp"
+#include "../../h/Riscv.hpp"
+#include "../../h/KConsole.hpp"
 
 MemoryAllocator::BlockHeader* MemoryAllocator::headAllocated = 0;
 MemoryAllocator::BlockHeader* MemoryAllocator::headFree = 0;

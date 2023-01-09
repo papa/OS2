@@ -2,15 +2,17 @@
 // Created by os on 4/27/22.
 //
 
-#include "../h/Riscv.hpp"
-#include "../h/MemoryAllocator.hpp"
-#include "../h/PCB.hpp"
-#include "../h/syscall_cpp.hpp"
-#include "../h/SleepPCBList.hpp"
-#include "../h/KConsole.hpp"
-#include "../h/Scheduler.hpp"
-#include "../h/buddyTests.hpp"
-#include "../h/slabTests.hpp"
+#include "../../h/Riscv.hpp"
+#include "../../h/MemoryAllocator.hpp"
+#include "../../h/PCB.hpp"
+#include "../../h/syscall_cpp.hpp"
+#include "../../h/SleepPCBList.hpp"
+#include "../../h/KConsole.hpp"
+#include "../../h/Scheduler.hpp"
+#include "../../h/buddyTests.hpp"
+#include "../../h/slabTests.hpp"
+#include "../../h/PCBWrapperUser.hpp"
+#include "../../h/syscall_c_kernel.hpp"
 
 uint64 Riscv::totalTime = 0;
 bool Riscv::finishSystem = false;
@@ -19,6 +21,10 @@ kmem_cache_t * Riscv::pcbCache = nullptr;
 kmem_cache_t * Riscv::semaphoreCache = nullptr;
 void* Riscv::mainPMT = nullptr;
 void* Riscv::riscvBuddy = nullptr;
+extern char *kernelTextStart;
+extern char *kernelDataStart;
+extern char *userTextStart;
+extern char *etext;
 
 void Riscv::initMemoryAllocation()
 {
@@ -48,12 +54,14 @@ void Riscv::initSystem()
 {
     w_stvec((uint64)&Riscv::supervisorTrap);
 
-    riscvBuddy = (void*)getNextBlockAddr((size_t)HEAP_START_ADDR);
+    riscvBuddy = (void*)getBlockAddr((size_t)HEAP_START_ADDR);
+    size_t heapStartBlock = getBlockAddr((size_t)HEAP_START_ADDR);
 
     size_t totalNumOfBytes = (size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1;
-    size_t bytesForKernel = totalNumOfBytes / 6; //TODO change this if needed
+    size_t bytesForKernel = totalNumOfBytes / 10; //TODO change this if needed
     size_t numOfBlocks = (bytesForKernel + BLOCK_NUM_OF_BYTES - 1) / BLOCK_NUM_OF_BYTES;
-    void* newStartAddr = (void*)((size_t)HEAP_START_ADDR + numOfBlocks*BLOCK_NUM_OF_BYTES);
+
+    void* newStartAddr = (void*)(heapStartBlock + numOfBlocks*BLOCK_NUM_OF_BYTES);
     MemoryAllocator::initMemory(newStartAddr);
 
     kmem_init((void*)HEAP_START_ADDR, numOfBlocks);
@@ -77,41 +85,55 @@ void Riscv::initSystem()
     //for(int i = 0; i < 20;i++)
     //    buddy_alloc((buddyAllocator*)riscvBuddy, 1);
 
-    for(size_t addr = 0x80000000; addr < (size_t)HEAP_START_ADDR;addr++)
-        addVirtualAddrInstr(addr);
-
-    /*size_t x = (((size_t*)mainPMT)[2] >> 10) << 12;
-    x = (((size_t*)x)[0] >> 10) << 12;
-    for(int i = 0;i < 512;i++)
-    {
-        KConsole::trapPrintStringInt("i ", i);
-        KConsole::trapPrintInt(((size_t*)x)[i], 16);
-        KConsole::trapPrintString("\n");
-        //size_t x = ((size_t*)x)[i] >> 10)) << 12;
-        KConsole::trapPrintInt((((size_t*)x)[i] >> 10) << 12, 16);
-        KConsole::trapPrintString("\n");
-
-    }*/
+//    for(size_t addr = 0x80000000; addr < (size_t)HEAP_START_ADDR;addr++)
+//        addVirtualAddrInstr(addr);
 
     //printBuddyInfo((buddyAllocator*)riscvBuddy);
 
-    for(size_t addr = (size_t)HEAP_START_ADDR;addr < (size_t)HEAP_END_ADDR;addr+=4096)
-        addVirtualAddr(addr);
+//    for(size_t addr = (size_t)HEAP_START_ADDR;addr < (size_t)HEAP_END_ADDR;addr+=4096)
+//        addVirtualAddr(addr);
 
-    //KConsole::trapPrintStringInt("Num of blocks ", numOfBlocks);
-    //size_t x = (size_t)HEAP_START_ADDR - 0x80000000;
-    //x/=BLOCK_SIZE;
-    //KConsole::trapPrintStringInt("X ", x);
-    //x/=BLOCK_SIZE;
-    //KConsole::trapPrintStringInt("x2 ", x);
+    uint64 uTextStart = (uint64)(&userTextStart);
+    uint64 eText = (uint64)(&etext);
+    uint64 kTextStart = (uint64)(&kernelTextStart);
+    uint64 kDataStart = (uint64)(&kernelDataStart);
 
-    addVirtualAddr((size_t)CONSOLE_RX_DATA);
-    addVirtualAddr((size_t)CONSOLE_TX_DATA);
-    addVirtualAddr((size_t)CONSOLE_STATUS);
-    addVirtualAddr(0xc201004);
+    for(uint64 i=0x80000000;i< uTextStart;i+=4096) {
+        setVirtualAddr(i, 0x1,0xb);
+    }
+
+    for(uint64 i=uTextStart;i<eText;i+=4096) {
+        setVirtualAddr(i, 0x1,0xb);
+    }
+
+    for(uint64 i = (uint64)(&etext); i<kTextStart;i+=4096){
+        setVirtualAddr(i, 0x1,0x7);
+    }
+
+    for(uint64 i=(uint64)(&kernelTextStart);i<kDataStart;i+=4096) {
+        setVirtualAddr(i, 0x1,0x1b); //todo
+    }
+
+    for(uint64 i=(uint64)&kernelDataStart;i<(uint64)HEAP_START_ADDR;i+=4096) {
+        setVirtualAddr(i, 0x1,0x17);
+    }
+
+    for(uint64 i=(uint64)HEAP_START_ADDR;i<(uint64)newStartAddr;i+=4096) {
+        setVirtualAddr(i, 0x1,0x7);
+    }
+
+    for(uint64 i = (uint64)newStartAddr;i<=(uint64)HEAP_END_ADDR;i+=4096){
+        setVirtualAddr(i, 0x1,0x17);
+    }
 
 
-    //Riscv::w_sstatus()
+    setVirtualAddr((size_t)CONSOLE_RX_DATA,0x1,0xf);
+    setVirtualAddr((size_t)CONSOLE_TX_DATA,0x1,0xf);
+    setVirtualAddr((size_t)CONSOLE_STATUS,0x1,0xf);
+    setVirtualAddr(0xc201004,0x1,0xf);
+
+
+    Riscv::ms_sstatus(1<<18);
     size_t satp = ((size_t)1 << 63) | ((size_t)mainPMT >> 12);
     __asm__ volatile("csrw satp, %0" : :"r"(satp));
 }
@@ -119,6 +141,7 @@ void Riscv::initSystem()
 void Riscv::endSystem()
 {
     disableInterrupts();
+    //__asm__ volatile("csrw satp, 0");
     finishSystem = true;
     PCB* pcb = 0;
     while(true)
@@ -131,7 +154,7 @@ void Riscv::endSystem()
     enableInterrupts();
     while(!PCB::consolePCB->isFinished())
     {
-        thread_dispatch();
+        thread_dispatch_kernel();
     }
     disableInterrupts();
 }
@@ -147,8 +170,18 @@ void Riscv::disableInterrupts()
 
 void Riscv::popSppSpie()
 {
-    __asm__ volatile ("csrw sepc, ra");
-    __asm__ volatile ("sret");
+    if(PCB::running->systemThread) {
+        __asm__ volatile ("csrw sepc, ra");
+        __asm__ volatile ("sret");
+    }
+    else
+    {
+        size_t ra = (size_t)&PCBWrapperUser::wrapperUser;
+        __asm__ volatile("mv a0, %0"::"r"((size_t)PCB::running->body));
+        __asm__ volatile("mv a1, %0"::"r"((size_t)PCB::running->args));
+        __asm__ volatile("csrw sepc, %0"::"r"(ra));
+        __asm__ volatile ("sret");
+    }
 }
 
 void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
@@ -359,21 +392,16 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    testOS2();
+    //testOS2();
 
-    //enableInterrupts();
+    enableInterrupts();
 
-    //while(!PCB::userPCB->isFinished())
-    //{
-    //    thread_dispatch();
-    //}
+    while(!PCB::userPCB->isFinished())
+    {
+        thread_dispatch_kernel();
+    }
 
     endSystem();
-}
-
-void Riscv::userMainWrapper(void* )
-{
-    userMain();
 }
 
 void Riscv::disableTimerInterrupts()

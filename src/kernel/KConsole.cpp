@@ -1,9 +1,10 @@
 //
 // Created by os on 5/19/22.
 //
-#include "../h/KConsole.hpp"
-#include "../test/printing.hpp"
-#include "../h/Riscv.hpp"
+#include "../../h/KConsole.hpp"
+#include "../user/test/printing.hpp"
+#include "../../h/Riscv.hpp"
+#include "../../h/syscall_c_kernel.hpp"
 
 uint64 KConsole::inputHead = 0;
 uint64 KConsole::inputTail = 0;
@@ -15,6 +16,7 @@ uint64 KConsole::pendingGetc = 0;
 char KConsole::inputBuffer[bufferSize];
 char KConsole::outputBuffer[bufferSize];
 uint64 KConsole::pendingPutc = 0;
+bool KConsole::finished = false;
 
 void KConsole::initialize()
 {
@@ -45,7 +47,9 @@ void KConsole::sendCharactersToConsole(void* p)
     while(true)
     {
             if(Riscv::finishSystem && KConsole::outputBufferEmpty() && pendingGetc == 0)
-                thread_exit();
+            {
+                thread_exit_kernel();
+            }
 
             uint64 operation = *(uint8*)CONSOLE_STATUS;
             if ((operation & STATUS_WRITE_MASK) && pendingPutc > 0)
@@ -56,7 +60,7 @@ void KConsole::sendCharactersToConsole(void* p)
             }
             else
             {
-                thread_dispatch();
+                thread_dispatch_kernel();
             }
     }
 }

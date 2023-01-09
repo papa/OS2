@@ -71,6 +71,7 @@ CXXFLAGS += -MMD -MP -MF"${@:%.o=%.d}"
 
 LDSCRIPT = kernel.ld
 LDFLAGS  = -z max-page-size=4096 --script ${LDSCRIPT}
+LDFLAGS += --Map=output.map
 LDLIBS   = --library-path . $(patsubst %,--library=:%,${LIBS})
 
 OBJECTS =

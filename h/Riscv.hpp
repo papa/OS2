@@ -6,7 +6,7 @@
 #define PROJECT_BASE_V1_0_RISCV_HPP
 
 #include "../lib/hw.h"
-#include "../test/userMain.hpp"
+#include "../src/user/test/userMain.hpp"
 #include "slabAllocator.hpp"
 
 class Riscv
@@ -29,8 +29,6 @@ private:
     static void initSystem();
     static void endSystem();
     static void initMemoryAllocation();
-
-    static void userMainWrapper(void* p);
 
     static void enableInterrupts();
 

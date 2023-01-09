@@ -41,6 +41,6 @@ char getc();
 
 void putc(char c);
 
-char sysCallGetCharOutput();
+//char sysCallGetCharOutput();
 
 #endif //PROJECT_BASE_V1_0_SYSCALL_C_HPP

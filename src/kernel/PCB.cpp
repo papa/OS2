@@ -2,13 +2,15 @@
 // Created by os on 4/27/22.
 //
 
-#include "../h/PCB.hpp"
-#include "../h/syscall_c.hpp"
-#include "../h/SleepPCBList.hpp"
-#include "../test/printing.hpp"
-#include "../h/KConsole.hpp"
-#include "../h/Scheduler.hpp"
-#include "../h/Riscv.hpp"
+#include "../../h/PCB.hpp"
+#include "../../h/syscall_c.hpp"
+#include "../../h/SleepPCBList.hpp"
+#include "../user/test/printing.hpp"
+#include "../../h/KConsole.hpp"
+#include "../../h/Scheduler.hpp"
+#include "../../h/Riscv.hpp"
+#include "../../h/syscall_c_kernel.hpp"
+#include "../../h/PCBWrapperUser.hpp"
 
 PCB* PCB::running = 0;
 uint64 PCB::timeSliceCounter = 0;
@@ -39,7 +41,7 @@ void PCB::runner()
     Riscv::popSppSpie();
     running->body(running->args);
 
-    thread_exit();
+    thread_exit_kernel();
 }
 
 void PCB::dispatch()
@@ -82,11 +84,11 @@ void PCB::initialize()
                               DEFAULT_TIME_SLICE);
     PCB::consolePCB->systemThread = true;
     PCB::consolePCB->start();
-    //PCB::userPCB = new PCB(&Riscv::userMainWrapper, 0,
-    //                       //kmalloc(DEFAULT_STACK_SIZE),
-    //                       MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
-    //                       DEFAULT_TIME_SLICE);
-    //PCB::userPCB->start();
+    PCB::userPCB = new PCB(&PCBWrapperUser::userMainWrapper, 0,
+//                           kmalloc(DEFAULT_STACK_SIZE),
+                           MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
+                           DEFAULT_TIME_SLICE);
+    PCB::userPCB->start();
 }
 
 bool PCB::isFinished()

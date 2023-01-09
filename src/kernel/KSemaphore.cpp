@@ -2,10 +2,10 @@
 // Created by os on 5/2/22.
 //
 
-#include "../h/KSemaphore.hpp"
-#include "../h/MemoryAllocator.hpp"
-#include "../h/Riscv.hpp"
-#include "../h/Scheduler.hpp"
+#include "../../h/KSemaphore.hpp"
+#include "../../h/MemoryAllocator.hpp"
+#include "../../h/Riscv.hpp"
+#include "../../h/Scheduler.hpp"
 
 KSemaphore::KSemaphore(int val)
 {

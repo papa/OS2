@@ -2,7 +2,7 @@
 // Created by os on 4/9/22.
 //
 
-#include "../h/syscall_c.hpp"
+#include "../../h/syscall_c.hpp"
 
 void* mem_alloc(size_t size)
 {
@@ -206,16 +206,17 @@ void putc(char c)
     __asm__ volatile("ecall");
 }
 
-char sysCallGetCharOutput()
-{
-    __asm__ volatile("li a0, 0x43");
 
-    __asm__ volatile("ecall");
-
-    uint64 result;
-    __asm__ volatile("mv %0, a0" : "=r"(result));
-    return (char)result;
-}
+//char sysCallGetCharOutput()
+//{
+//    __asm__ volatile("li a0, 0x43");
+//
+//    __asm__ volatile("ecall");
+//
+//    uint64 result;
+//    __asm__ volatile("mv %0, a0" : "=r"(result));
+//    return (char)result;
+//}
 
 int thread_delete_pcb(thread_t handle)
 {

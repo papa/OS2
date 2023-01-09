@@ -1,6 +1,6 @@
-#include "../h/buddyTests.hpp"
-#include "../h/KConsole.hpp"
-#include "../h/MemoryAllocator.hpp"
+#include "../../h/buddyTests.hpp"
+#include "../../h/KConsole.hpp"
+#include "../../h/MemoryAllocator.hpp"
 
 void buddyInitTest1()
 {
