@@ -49,6 +49,8 @@ void PCB::dispatch()
     PCB* old = running;
     if(old->getState() == PCB::RUNNING)
         Scheduler::put(old);
+    else if(old->getState() == PCB::FINISHED) // TODO test it
+        delete old;
     PCB::running = Scheduler::get();
     PCB::running->setState(PCB::RUNNING);
 
@@ -79,8 +81,8 @@ void PCB::initialize()
     PCB::running = mainSystem;
     PCB::running->setState(PCB::RUNNING);
     PCB::consolePCB = new PCB(&KConsole::sendCharactersToConsole, 0,
-                              //kmalloc(DEFAULT_STACK_SIZE),
-                              MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
+                              kmalloc(DEFAULT_STACK_SIZE),
+//                              MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
                               DEFAULT_TIME_SLICE);
     PCB::consolePCB->systemThread = true;
     PCB::consolePCB->start();

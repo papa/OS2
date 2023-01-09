@@ -1,0 +1,118 @@
+GAS LISTING /tmp/ccWiREWu.s 			page 1
+
+
+   1              		.file	"_thread.cpp"
+   2              		.option pic
+   3              		.option norelax
+   4              		.text
+   5              	.Ltext0:
+   6              		.align	2
+   7              		.globl	_ZN7_threaddlEPv
+   9              	_ZN7_threaddlEPv:
+  10              	.LFB0:
+  11              		.file 1 "src/user/_thread.cpp"
+   1:src/user/_thread.cpp **** //
+   2:src/user/_thread.cpp **** // Created by os on 6/3/22.
+   3:src/user/_thread.cpp **** //
+   4:src/user/_thread.cpp **** 
+   5:src/user/_thread.cpp **** #include "../../h/_thread.hpp"
+   6:src/user/_thread.cpp **** #include "../../h/syscall_c.hpp"
+   7:src/user/_thread.cpp **** 
+   8:src/user/_thread.cpp **** void _thread::operator delete(void *p) {
+  12              		.loc 1 8 40
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15 0000 130101FF 		addi	sp,sp,-16
+  16              		.cfi_def_cfa_offset 16
+  17 0004 23341100 		sd	ra,8(sp)
+  18 0008 23308100 		sd	s0,0(sp)
+  19              		.cfi_offset 1, -8
+  20              		.cfi_offset 8, -16
+  21 000c 13040101 		addi	s0,sp,16
+  22              		.cfi_def_cfa 8, 0
+   9:src/user/_thread.cpp ****     thread_delete_pcb((thread_t)p);
+  23              		.loc 1 9 5
+  24              		.loc 1 9 22 is_stmt 0
+  25 0010 97000000 		call	_Z17thread_delete_pcbP7_thread@plt
+  25      E7800000 
+  26              	.LVL1:
+  10:src/user/_thread.cpp **** }...
+  27              		.loc 1 10 1
+  28 0018 83308100 		ld	ra,8(sp)
+  29              		.cfi_restore 1
+  30 001c 03340100 		ld	s0,0(sp)
+  31              		.cfi_restore 8
+  32              		.cfi_def_cfa 2, 16
+  33 0020 13010101 		addi	sp,sp,16
+  34              		.cfi_def_cfa_offset 0
+  35 0024 67800000 		jr	ra
+  36              		.cfi_endproc
+  37              	.LFE0:
+  39              	.Letext0:
+  40              		.file 2 "src/user/../../h/../lib/hw.h"
+  41              		.file 3 "src/user/../../h/syscall_c.hpp"
+  42              		.file 4 "src/user/../../h/_thread.hpp"
+GAS LISTING /tmp/ccWiREWu.s 			page 2
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 _thread.cpp
+     /tmp/ccWiREWu.s:9      .text:0000000000000000 _ZN7_threaddlEPv
+     /tmp/ccWiREWu.s:13     .text:0000000000000000 .L0 
+     /tmp/ccWiREWu.s:15     .text:0000000000000000 .L0 
+     /tmp/ccWiREWu.s:16     .text:0000000000000004 .L0 
+     /tmp/ccWiREWu.s:19     .text:000000000000000c .L0 
+     /tmp/ccWiREWu.s:20     .text:000000000000000c .L0 
+     /tmp/ccWiREWu.s:22     .text:0000000000000010 .L0 
+     /tmp/ccWiREWu.s:24     .text:0000000000000010 .L0 
+     /tmp/ccWiREWu.s:25     .text:0000000000000010 .L0 
+     /tmp/ccWiREWu.s:28     .text:0000000000000018 .L0 
+     /tmp/ccWiREWu.s:29     .text:000000000000001c .L0 
+     /tmp/ccWiREWu.s:31     .text:0000000000000020 .L0 
+     /tmp/ccWiREWu.s:32     .text:0000000000000020 .L0 
+     /tmp/ccWiREWu.s:34     .text:0000000000000024 .L0 
+     /tmp/ccWiREWu.s:36     .text:0000000000000028 .L0 
+     /tmp/ccWiREWu.s:43     .text:0000000000000028 .L0 
+     /tmp/ccWiREWu.s:238    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccWiREWu.s:549    .debug_str:00000000000000ef .LASF19
+     /tmp/ccWiREWu.s:555    .debug_str:00000000000001e8 .LASF20
+     /tmp/ccWiREWu.s:539    .debug_str:0000000000000094 .LASF21
+     /tmp/ccWiREWu.s:5      .text:0000000000000000 .Ltext0
+     /tmp/ccWiREWu.s:39     .text:0000000000000028 .Letext0
+     /tmp/ccWiREWu.s:517    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccWiREWu.s:559    .debug_str:000000000000021c .LASF22
+     /tmp/ccWiREWu.s:541    .debug_str:00000000000000b2 .LASF23
+     /tmp/ccWiREWu.s:537    .debug_str:0000000000000083 .LASF24
+     /tmp/ccWiREWu.s:519    .debug_str:0000000000000000 .LASF0
+     /tmp/ccWiREWu.s:561    .debug_str:0000000000000224 .LASF1
+     /tmp/ccWiREWu.s:545    .debug_str:00000000000000ce .LASF2
+     /tmp/ccWiREWu.s:535    .debug_str:000000000000007c .LASF4
+     /tmp/ccWiREWu.s:529    .debug_str:0000000000000041 .LASF3
+     /tmp/ccWiREWu.s:525    .debug_str:000000000000002a .LASF5
+     /tmp/ccWiREWu.s:533    .debug_str:0000000000000069 .LASF6
+     /tmp/ccWiREWu.s:551    .debug_str:00000000000001bf .LASF7
+     /tmp/ccWiREWu.s:569    .debug_str:000000000000025f .LASF8
+     /tmp/ccWiREWu.s:521    .debug_str:000000000000000d .LASF9
+     /tmp/ccWiREWu.s:523    .debug_str:000000000000001b .LASF10
+     /tmp/ccWiREWu.s:547    .debug_str:00000000000000dc .LASF11
+     /tmp/ccWiREWu.s:565    .debug_str:0000000000000247 .LASF12
+     /tmp/ccWiREWu.s:527    .debug_str:0000000000000031 .LASF13
+     /tmp/ccWiREWu.s:563    .debug_str:0000000000000237 .LASF14
+     /tmp/ccWiREWu.s:543    .debug_str:00000000000000c2 .LASF15
+     /tmp/ccWiREWu.s:553    .debug_str:00000000000001d2 .LASF16
+     /tmp/ccWiREWu.s:531    .debug_str:0000000000000053 .LASF17
+     /tmp/ccWiREWu.s:567    .debug_str:0000000000000256 .LASF18
+     /tmp/ccWiREWu.s:10     .text:0000000000000000 .LFB0
+     /tmp/ccWiREWu.s:37     .text:0000000000000028 .LFE0
+     /tmp/ccWiREWu.s:490    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccWiREWu.s:26     .text:0000000000000018 .LVL1
+     /tmp/ccWiREWu.s:557    .debug_str:00000000000001fd .LASF25
+     /tmp/ccWiREWu.s:571    .debug_str:000000000000026f .LASF26
+     /tmp/ccWiREWu.s:14     .text:0000000000000000 .LVL0
+     /tmp/ccWiREWu.s:44     .debug_info:0000000000000000 .Ldebug_info0
+
+UNDEFINED SYMBOLS
+GAS LISTING /tmp/ccWiREWu.s 			page 3
+
+
+_Z17thread_delete_pcbP7_thread

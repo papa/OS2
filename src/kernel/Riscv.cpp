@@ -392,14 +392,14 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    //testOS2();
+    testOS2();
 
-    enableInterrupts();
+    //enableInterrupts();
 
-    while(!PCB::userPCB->isFinished())
-    {
-        thread_dispatch_kernel();
-    }
+    //while(!PCB::userPCB->isFinished())
+    //{
+    //    thread_dispatch_kernel();
+    //}
 
     endSystem();
 }
