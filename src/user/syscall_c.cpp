@@ -66,6 +66,11 @@ int thread_create(thread_t* handle, void (*start_routine)(void*), void* args)
     uint64 result;
     __asm__ volatile("mv %0, a0" : "=r"(result));
 
+    if(result != 0)
+    {
+        mem_free(stack_space);
+    }
+
     return result;
 }
 
@@ -185,6 +190,12 @@ int thread_make_pcb(thread_t* handle, void(*start_routine)(void*), void *arg)
     //get the result
     uint64 result;
     __asm__ volatile("mv %0, a0" : "=r"(result));
+
+    if(result != 0)
+    {
+        mem_free(stack_space);
+    }
+
     return result;
 }
 
