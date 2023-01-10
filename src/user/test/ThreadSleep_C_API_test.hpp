@@ -6,7 +6,7 @@
 #define XV6_THREADSLEEP_C_API_TEST_HPP
 
 #include "../../../h/syscall_c.hpp"
-
+#include "../../../h/syscall_c_kernel.hpp"
 #include "printing.hpp"
 
 bool finished[2];
@@ -20,6 +20,11 @@ void sleepyRun(void *arg) {
         printInt(sleep_time);
         printString(" !\n");
         time_sleep(sleep_time);
+//        if(i == 4 && sleep_time == 10)
+//        {
+//            thread_dispatch_kernel();
+//            *((size_t*)HEAP_START_ADDR) = 4;
+//        }
     }
     finished[sleep_time/10-1] = true;
 }
@@ -33,7 +38,14 @@ void testSleeping() {
         thread_create(&sleepyThread[i], sleepyRun, sleep_times + i);
     }
 
-    while (!(finished[0] && finished[1])) {}
+//    int count = 0;
+    while (!(finished[0] && finished[1])) {
+//        count++;
+//        if(count == 2000*2000)
+//            finished[0] = true;
+//        else
+//            thread_dispatch();
+    }
 }
 
 #endif //XV6_THREADSLEEP_C_API_TEST_HPP

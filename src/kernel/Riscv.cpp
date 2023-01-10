@@ -254,22 +254,21 @@ void Riscv::handleSupervisorTrap()
     {
         case storePF:
         {
-            size_t addrPF = 0;
-            __asm__ volatile("csrr %0, stval":"=r"(addrPF));
-            addVirtualAddr(addrPF);
+            //size_t addrPF = 0;
+            //__asm__ volatile("csrr %0, stval":"=r"(addrPF));
+            //addVirtualAddr(addrPF);
+            PCB::threadExitHandler();
+            break;
         }
         case loadPF:
         {
-            size_t addrPF = 0;
-            __asm__ volatile("csrr %0, stval":"=r"(addrPF));
-            addVirtualAddr(addrPF);
+            PCB::threadExitHandler();
+            break;
         }
         case instrPF:
         {
-            //KConsole::trapPrintString("instr PF\n");
-            size_t addrPF = 0;
-            __asm__ volatile("csrr %0, stval":"=r"(addrPF));
-            addVirtualAddrInstr(addrPF);
+            PCB::threadExitHandler();
+            break;
         }
         case timerInterrupt:
         {
