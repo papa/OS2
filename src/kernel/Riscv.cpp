@@ -27,7 +27,6 @@ bool Riscv::kernelMainCalled = false;
 kmem_cache_t * Riscv::pcbCache = nullptr;
 kmem_cache_t * Riscv::semaphoreCache = nullptr;
 void* Riscv::mainPMT = nullptr;
-void* Riscv::riscvBuddy = nullptr;
 size_t Riscv::programStartAddr = 0x80000000;
 extern char *userTextStart;
 extern char *userDataStart;
@@ -55,7 +54,6 @@ void Riscv::initSystem()
 {
     w_stvec((uint64)&Riscv::supervisorTrap);
 
-    riscvBuddy = (void*)getBlockAddr((size_t)HEAP_START_ADDR);
     size_t heapStartBlock = getBlockAddr((size_t)HEAP_START_ADDR);
 
     size_t numOfBlocks = 4096 + 1;
@@ -70,7 +68,7 @@ void Riscv::initSystem()
     PCB::initialize();
     KConsole::initialize();
 
-    mainPMT = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+    mainPMT = buddy_alloc(1);
     for(size_t i = 0; i < NUM_OF_ENTRIES;i++)
         ((size_t*)mainPMT)[i] = 0;
 
@@ -172,7 +170,7 @@ void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
     void* pmt1 = nullptr;
     if(pmt2Desc == 0)
     {
-        pmt1 = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+        pmt1 = buddy_alloc(1);
         for(int i = 0; i < NUM_OF_ENTRIES;i++)
         {
             ((size_t*)pmt1)[i] = 0;
@@ -188,7 +186,7 @@ void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
     void* pmt0 = nullptr;
     if(pmt1Desc == 0)
     {
-        pmt0 = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
+        pmt0 = buddy_alloc(1);
         for(int i = 0; i < NUM_OF_ENTRIES;i++)
         {
             ((size_t*)pmt0)[i] = 0;

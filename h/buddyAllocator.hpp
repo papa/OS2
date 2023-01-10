@@ -32,15 +32,16 @@ typedef struct buddyAllocator
 }buddyAllocator;
 
 buddyAllocator* buddy_init(void* addr, size_t numOfBlocks);
-void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks);
-void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks);
+void* buddy_alloc(size_t numOfBlocks);
+void buddy_free(void* addr, size_t numOfBlocks);
 size_t getBlockAddr(size_t addr);
 size_t getNextBlockAddr(size_t addr);
 size_t getDeg2Floor(size_t num);
 size_t getDeg2Ceil(size_t num);
-void addBlocks(buddyAllocator* buddy, void* addr, size_t numOfBlocks);
-size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level);
-void addBlockToLevel(buddyAllocator* buddy, void* addr, size_t level);
-void split(buddyAllocator* buddy, void* addr, size_t finalLevel, size_t currLevel, bool splitMore);
-void printBuddyInfo(buddyAllocator* buddy);
+void addBlocks(void* addr, size_t numOfBlocks);
+size_t getBuddyBlockAddr(void* addr, size_t level);
+void addBlockToLevel(void* addr, size_t level);
+void split(void* addr, size_t finalLevel, size_t currLevel, bool splitMore);
+void printBuddyInfo();
+void* getBuddy();
 #endif //PROJECT_BASE_BUDDYALLOCATOR_H

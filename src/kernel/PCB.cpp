@@ -49,8 +49,8 @@ void PCB::dispatch()
     PCB* old = running;
     if(old->getState() == PCB::RUNNING)
         Scheduler::put(old);
-    else if(old->getState() == PCB::FINISHED) // TODO test it
-        delete old;
+    //else if(old->getState() == PCB::FINISHED) // TODO test it
+    //    delete old;
     PCB::running = Scheduler::get();
     PCB::running->setState(PCB::RUNNING);
 

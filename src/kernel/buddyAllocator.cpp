@@ -3,6 +3,8 @@
 
 #define BLOCK_SIZE 4096
 
+static buddyAllocator* buddy = nullptr;
+
 buddyAllocator* buddy_init(void* addr, size_t numOfBlocks)
 {
     //KConsole::trapPrintString("Buddy initialization\n");
@@ -17,7 +19,7 @@ buddyAllocator* buddy_init(void* addr, size_t numOfBlocks)
     }
     //KConsole::trapPrintStringInt("Buddy metadata address: ", buddyAddr,16);
     numOfBlocks--; // take one block for buddy metadata
-    buddyAllocator* buddy = (buddyAllocator*)buddyAddr;
+    buddy = (buddyAllocator*)buddyAddr;
     buddy->startAddr = (void*)getNextBlockAddr(buddyAddr);
     buddy->numOfBlocks = numOfBlocks;
     buddy->numOfFreeBlocks = numOfBlocks;
@@ -29,12 +31,12 @@ buddyAllocator* buddy_init(void* addr, size_t numOfBlocks)
     //TODO
     //maybe do it differently, like putting in chunks of power of 2
     for(size_t i = 0;i < numOfBlocks;i++)
-        addBlocks(buddy, (block*)buddy->startAddr + i, 0);
+        addBlocks((block*)buddy->startAddr + i, 0);
 
     return buddy;
 }
 
-void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks)
+void* buddy_alloc(size_t numOfBlocks)
 {
     //KConsole::trapPrintStringInt("Buddy allocation: ", numOfBlocks);
     size_t level = getDeg2Ceil(numOfBlocks);
@@ -48,7 +50,7 @@ void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks)
             buddy->bucket[i].first = ret->next;
             if(buddy->bucket[i].first == nullptr)
                 buddy->bucket[i].last = nullptr;
-            split(buddy, (void*)ret, level, i, true);
+            split((void*)ret, level, i, true);
             buddy->numOfFreeBlocks-= (1 << level);
             return ret;
         }
@@ -58,28 +60,28 @@ void* buddy_alloc(buddyAllocator* buddy, size_t numOfBlocks)
 }
 
 //split chunks into smaller chunks, until it is necessary
-void split(buddyAllocator* buddy, void* addr, size_t finalLevel, size_t currLevel, bool splitMore)
+void split(void* addr, size_t finalLevel, size_t currLevel, bool splitMore)
 {
     if(!splitMore)
     {
-        addBlockToLevel(buddy, addr, currLevel);
+        addBlockToLevel(addr, currLevel);
     }
     else
     {
         if(currLevel == finalLevel)
             return;
-        size_t buddyBlock = getBuddyBlockAddr(buddy, addr, currLevel - 1); // currLevel - 1 for next step
-        split(buddy, (void*)buddyBlock, finalLevel, currLevel - 1, false); // continue splitting
-        split(buddy, addr, finalLevel, currLevel - 1, true); // continue splitting
+        size_t buddyBlock = getBuddyBlockAddr(addr, currLevel - 1); // currLevel - 1 for next step
+        split((void*)buddyBlock, finalLevel, currLevel - 1, false); // continue splitting
+        split(addr, finalLevel, currLevel - 1, true); // continue splitting
     }
 }
 
 //TODO
 //maybe check if address is aligned to start of block
-void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
+void buddy_free(void* addr, size_t numOfBlocks)
 {
     size_t level = getDeg2Ceil(numOfBlocks);
-    addBlocks(buddy, addr, level); //adds free blocks
+    addBlocks(addr, level); //adds free blocks
     buddy->numOfFreeBlocks += (1 << level);
 }
 
@@ -119,14 +121,14 @@ size_t getDeg2Ceil(size_t num)
 }
 
 //function to add free blocks to the buddy
-void addBlocks(buddyAllocator* buddy, void* addr, size_t level)
+void addBlocks(void* addr, size_t level)
 {
     if(level == buddy->maxLevel)
     {
-        addBlockToLevel(buddy, addr, level);
+        addBlockToLevel(addr, level);
         return;
     }
-    size_t buddyBlockAddr = getBuddyBlockAddr(buddy,addr,level);
+    size_t buddyBlockAddr = getBuddyBlockAddr(addr,level);
     //KConsole::trapPrintString("Buddy block addr ");
     //KConsole::trapPrintInt(buddyBlockAddr, 16); KConsole::trapPrintString("\n");
     buddyBlock* curr = buddy->bucket[level].first;
@@ -148,8 +150,8 @@ void addBlocks(buddyAllocator* buddy, void* addr, size_t level)
                 else
                     buddy->bucket[level].first = curr->next;
             }
-            if((size_t)addr < buddyBlockAddr) addBlocks(buddy, addr, level + 1); //merge two chunks
-            else addBlocks(buddy, (void*)buddyBlockAddr, level + 1); //merge two chunks
+            if((size_t)addr < buddyBlockAddr) addBlocks(addr, level + 1); //merge two chunks
+            else addBlocks((void*)buddyBlockAddr, level + 1); //merge two chunks
             return;
         }
 
@@ -157,11 +159,11 @@ void addBlocks(buddyAllocator* buddy, void* addr, size_t level)
         curr = curr->next;
     }
 
-    addBlockToLevel(buddy, addr, level);
+    addBlockToLevel(addr, level);
 }
 
 //adds free block to level
-void addBlockToLevel(buddyAllocator* buddy, void* addr, size_t level)
+void addBlockToLevel(void* addr, size_t level)
 {
     buddyBlock* newBlock = (buddyBlock*)addr;
     newBlock->next = nullptr;
@@ -176,7 +178,7 @@ void addBlockToLevel(buddyAllocator* buddy, void* addr, size_t level)
     }
 }
 
-size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level)
+size_t getBuddyBlockAddr(void* addr, size_t level)
 {
     size_t diff = BLOCK_SIZE << level;
     size_t off = (size_t)addr - (size_t)buddy->startAddr;
@@ -186,7 +188,7 @@ size_t getBuddyBlockAddr(buddyAllocator* buddy, void* addr, size_t level)
         return (size_t)addr + diff;
 }
 
-void printBuddyInfo(buddyAllocator* buddy)
+void printBuddyInfo()
 {
     KConsole::trapPrintString("Buddy info-------------------------------------------\n");
     KConsole::trapPrintStringInt("Buddy starting address ", (size_t)buddy->startAddr, 16);
@@ -205,4 +207,9 @@ void printBuddyInfo(buddyAllocator* buddy)
         }
     }
     KConsole::trapPrintString("End of buddy info-------------------------------------------\n");
+}
+
+void* getBuddy()
+{
+    return (void*)buddy;
 }

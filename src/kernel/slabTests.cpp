@@ -114,6 +114,8 @@ void work(void* pdata)
         kmem_cache_free(objs[i].cache, objs[i].data);
     }
 
+    kmem_cache_info(cache);
+
     //kmem_cache_info(cache);
     //kmem_cache_info(data.shared);
     //printSlabAllocatorInfo();

@@ -4,77 +4,71 @@
 
 void buddyInitTest1()
 {
-    buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 18);
-    printBuddyInfo(buddy);
+    printBuddyInfo();
 }
 
 void buddyOnlyAllocsTest1()
 {
-    buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 10);
-    printBuddyInfo(buddy);
-    buddy_alloc(buddy,1);
-    printBuddyInfo(buddy);
-    buddy_alloc(buddy,1);
-    printBuddyInfo(buddy);
-    buddy_alloc(buddy,1);
-    printBuddyInfo(buddy);
-    buddy_alloc(buddy,3);
-    printBuddyInfo(buddy);
+    printBuddyInfo();
+    buddy_alloc(1);
+    printBuddyInfo();
+    buddy_alloc(1);
+    printBuddyInfo();
+    buddy_alloc(1);
+    printBuddyInfo();
+    buddy_alloc(3);
+    printBuddyInfo();
 }
 
 void buddyOnlyAllocsTest2()
 {
-    buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 10);
-    void* adr = buddy_alloc(buddy, 100);
+    void* adr = buddy_alloc(100);
     if(adr == nullptr)
     {
-        printBuddyInfo(buddy);
+        printBuddyInfo();
     }
 }
 
 void buddyAllocFreeTest1()
 {
-    buddyAllocator* buddy = buddy_init((void*)HEAP_START_ADDR, 10);
-    printBuddyInfo(buddy);
-    void* adr = buddy_alloc(buddy,1);
-    printBuddyInfo(buddy);
-    buddy_free(buddy, adr, 1);
-    printBuddyInfo(buddy);
+    printBuddyInfo();
+    void* adr = buddy_alloc(1);
+    printBuddyInfo();
+    buddy_free(adr, 1);
+    printBuddyInfo();
 
-    adr = buddy_alloc(buddy, 2);
-    void* adr2 = buddy_alloc(buddy, 3);
-    printBuddyInfo(buddy);
+    adr = buddy_alloc(2);
+    void* adr2 = buddy_alloc(3);
+    printBuddyInfo();
 
-    buddy_free(buddy, adr, 2);
-    printBuddyInfo(buddy);
-    adr = buddy_alloc(buddy, 1);
-    printBuddyInfo(buddy);
+    buddy_free(adr, 2);
+    printBuddyInfo();
+    adr = buddy_alloc(1);
+    printBuddyInfo();
 
-    buddy_free(buddy, adr2, 3);
-    printBuddyInfo(buddy);
-    buddy_free(buddy, adr, 1);
-    printBuddyInfo(buddy);
+    buddy_free(adr2, 3);
+    printBuddyInfo();
+    buddy_free(adr, 1);
+    printBuddyInfo();
 }
 
 void buddyTestMixa()
 {
-    size_t mask = ((size_t)-1) << 12;
-    buddyAllocator* buddy = (buddyAllocator*)(((size_t)HEAP_START_ADDR & mask) + (1 << 12));
     void** x = (void**)MemoryAllocator::kmalloc(5000*sizeof(void*));
-    printBuddyInfo(buddy);
+    printBuddyInfo();
     for(int i = 0; i < 5000;i++)
     {
-        x[i] = buddy_alloc(buddy, 2);
+        x[i] = buddy_alloc(2);
         if(x[i] == nullptr)
         {
             KConsole::trapPrintStringInt("Bad allocation ", i);
             for(int j = 0;j < i;j++)
             {
-                buddy_free(buddy, x[j], 2);
+                buddy_free(x[j], 2);
             }
             break;
         }
     }
-    printBuddyInfo(buddy);
+    printBuddyInfo();
 }
 
