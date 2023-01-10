@@ -29,8 +29,11 @@ private:
 
     static const uint64 bufferSize = 2*8192;
 
-    static char inputBuffer[bufferSize];
-    static char outputBuffer[bufferSize];
+    //static char inputBuffer[bufferSize];
+    //static char outputBuffer[bufferSize];
+
+    static char *inputBuffer;
+    static char *outputBuffer;
 
     static uint64 pendingGetc;
     static uint64 pendingPutc;

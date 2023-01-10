@@ -13,8 +13,10 @@ uint64 KConsole::outputTail = 0;
 KSemaphore* KConsole::hasCharactersOutput = nullptr;
 KSemaphore* KConsole::hasCharactersInput = nullptr;
 uint64 KConsole::pendingGetc = 0;
-char KConsole::inputBuffer[bufferSize];
-char KConsole::outputBuffer[bufferSize];
+//char KConsole::inputBuffer[bufferSize];
+//char KConsole::outputBuffer[bufferSize];
+char* KConsole::inputBuffer = nullptr;
+char* KConsole::outputBuffer = nullptr;
 uint64 KConsole::pendingPutc = 0;
 bool KConsole::finished = false;
 
@@ -22,6 +24,8 @@ void KConsole::initialize()
 {
     hasCharactersInput = new KSemaphore(0);
     hasCharactersOutput = new KSemaphore(0);
+    inputBuffer = (char*)kmalloc(bufferSize);
+    outputBuffer = (char*)kmalloc(bufferSize);
 }
 
 //extern const uint64 CONSOLE_STATUS;
