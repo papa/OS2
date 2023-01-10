@@ -26,9 +26,10 @@ private:
 
     static void initVirtualMemory();
 
+    static void setVirtualAddrRange(size_t startAddr, size_t endAddr, int permission);
+
     static void initSystem();
     static void endSystem();
-    static void initMemoryAllocation();
 
     static void enableInterrupts();
 
@@ -110,6 +111,8 @@ private:
 
     static kmem_cache_t * pcbCache;
     static kmem_cache_t* semaphoreCache;
+
+    static size_t programStartAddr;
 
     friend class PCB;
     friend class Scheduler;

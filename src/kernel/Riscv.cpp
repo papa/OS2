@@ -14,6 +14,13 @@
 #include "../../h/PCBWrapperUser.hpp"
 #include "../../h/syscall_c_kernel.hpp"
 
+#define USER_RX 0x1b
+#define USER_RW 0x17
+#define KERNEL_RX 0xb
+#define KERNEL_RW 0x7
+#define VMEM_V_BIT 0x1
+#define NUM_OF_ENTRIES 512
+
 uint64 Riscv::totalTime = 0;
 bool Riscv::finishSystem = false;
 bool Riscv::kernelMainCalled = false;
@@ -21,24 +28,11 @@ kmem_cache_t * Riscv::pcbCache = nullptr;
 kmem_cache_t * Riscv::semaphoreCache = nullptr;
 void* Riscv::mainPMT = nullptr;
 void* Riscv::riscvBuddy = nullptr;
+size_t Riscv::programStartAddr = 0x80000000;
+extern char *userTextStart;
+extern char *userDataStart;
 extern char *kernelTextStart;
 extern char *kernelDataStart;
-extern char *userTextStart;
-extern char *etext;
-
-void Riscv::initMemoryAllocation()
-{
-    size_t totalNumOfBytes = (size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1;
-    size_t bytesForKernel = totalNumOfBytes / 10; //TODO change this if needed
-    size_t numOfBlocks = (bytesForKernel + BLOCK_NUM_OF_BYTES - 1) / BLOCK_NUM_OF_BYTES;
-
-    void* newStartAddr = (void*)((size_t)HEAP_START_ADDR + numOfBlocks*BLOCK_NUM_OF_BYTES);
-    MemoryAllocator::initMemory(newStartAddr);
-
-    //kmem_init((void*)HEAP_START_ADDR, numOfBlocks);
-    //pcbCache = kmem_cache_create("Cache of PCBs", sizeof(PCB), nullptr, nullptr);
-    //semaphoreCache = kmem_cache_create("Cache of KSemaphore", sizeof(KSemaphore), nullptr, nullptr);
-}
 
 void Riscv::initVirtualMemory()
 {
@@ -47,9 +41,16 @@ void Riscv::initVirtualMemory()
     //size_t pmtSize = (1 << 9);
     //size_t descSize = 64;
     //size_t
-
 }
 
+void Riscv::setVirtualAddrRange(size_t startAddr, size_t endAddr, int permission)
+{
+    for(size_t i = startAddr; i < endAddr; i+=BLOCK_NUM_OF_BYTES)
+    {
+        setVirtualAddr(i, VMEM_V_BIT, permission);
+    }
+
+}
 void Riscv::initSystem()
 {
     w_stvec((uint64)&Riscv::supervisorTrap);
@@ -57,9 +58,7 @@ void Riscv::initSystem()
     riscvBuddy = (void*)getBlockAddr((size_t)HEAP_START_ADDR);
     size_t heapStartBlock = getBlockAddr((size_t)HEAP_START_ADDR);
 
-    size_t totalNumOfBytes = (size_t)HEAP_END_ADDR - (size_t)HEAP_START_ADDR + 1;
-    size_t bytesForKernel = totalNumOfBytes / 10; //TODO change this if needed
-    size_t numOfBlocks = (bytesForKernel + BLOCK_NUM_OF_BYTES - 1) / BLOCK_NUM_OF_BYTES;
+    size_t numOfBlocks = 4096 + 1;
 
     void* newStartAddr = (void*)(heapStartBlock + numOfBlocks*BLOCK_NUM_OF_BYTES);
     MemoryAllocator::initMemory(newStartAddr);
@@ -68,80 +67,60 @@ void Riscv::initSystem()
     pcbCache = kmem_cache_create("Cache of PCBs", sizeof(PCB), nullptr, nullptr);
     semaphoreCache = kmem_cache_create("Cache of KSemaphore", sizeof(KSemaphore), nullptr, nullptr);
 
-    //initMemoryAllocation();
     PCB::initialize();
     KConsole::initialize();
 
-    //KConsole::trapPrintStringInt("Buddy allocator: ", (size_t)riscvBuddy, 16);
-    //printSlabAllocatorInfo();
     mainPMT = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
-    for(size_t i = 0; i < (1 << 9);i++)
+    for(size_t i = 0; i < NUM_OF_ENTRIES;i++)
         ((size_t*)mainPMT)[i] = 0;
 
     KConsole::trapPrintStringInt("main PMT ", (size_t)mainPMT,16);
 
-    //printBuddyInfo((buddyAllocator*)riscvBuddy);
-
-    //for(int i = 0; i < 20;i++)
-    //    buddy_alloc((buddyAllocator*)riscvBuddy, 1);
-
-//    for(size_t addr = 0x80000000; addr < (size_t)HEAP_START_ADDR;addr++)
-//        addVirtualAddrInstr(addr);
-
-    //printBuddyInfo((buddyAllocator*)riscvBuddy);
-
-//    for(size_t addr = (size_t)HEAP_START_ADDR;addr < (size_t)HEAP_END_ADDR;addr+=4096)
-//        addVirtualAddr(addr);
-
-    uint64 uTextStart = (uint64)(&userTextStart);
-    uint64 eText = (uint64)(&etext);
     uint64 kTextStart = (uint64)(&kernelTextStart);
     uint64 kDataStart = (uint64)(&kernelDataStart);
+    uint64 uTextStart = (uint64)(&userTextStart);
+    uint64 uDataStart = (uint64)(&userDataStart);
 
-    for(uint64 i=0x80000000;i< uTextStart;i+=4096) {
-        setVirtualAddr(i, 0x1,0xb);
-    }
-
-    for(uint64 i=uTextStart;i<eText;i+=4096) {
-        setVirtualAddr(i, 0x1,0xb);
-    }
-
-    for(uint64 i = (uint64)(&etext); i<kTextStart;i+=4096){
-        setVirtualAddr(i, 0x1,0x7);
-    }
-
-    for(uint64 i=(uint64)(&kernelTextStart);i<kDataStart;i+=4096) {
-        setVirtualAddr(i, 0x1,0x1b); //todo
-    }
-
-    for(uint64 i=(uint64)&kernelDataStart;i<(uint64)HEAP_START_ADDR;i+=4096) {
-        setVirtualAddr(i, 0x1,0x17);
-    }
-
-    for(uint64 i=(uint64)HEAP_START_ADDR;i<(uint64)newStartAddr;i+=4096) {
-        setVirtualAddr(i, 0x1,0x7);
-    }
-
-    for(uint64 i = (uint64)newStartAddr;i<=(uint64)HEAP_END_ADDR;i+=4096){
-        setVirtualAddr(i, 0x1,0x17);
-    }
-
+    setVirtualAddrRange(programStartAddr, kTextStart, KERNEL_RX); // before kernel instructions
+    setVirtualAddrRange(kTextStart, kDataStart,KERNEL_RX); // kernel instructions
+    setVirtualAddrRange((size_t)(&kernelDataStart), uTextStart, KERNEL_RW); // kernel data
+    setVirtualAddrRange((size_t)(&userTextStart), uDataStart, USER_RX); //user instructions
+    setVirtualAddrRange((size_t)(&userDataStart), (size_t)HEAP_START_ADDR, USER_RW); // user data
+    setVirtualAddrRange((size_t)HEAP_START_ADDR, (size_t)newStartAddr, KERNEL_RW); // kernel heap data
+    setVirtualAddrRange((size_t)newStartAddr, (size_t)HEAP_END_ADDR + 1,USER_RW); // user heap data
 
     setVirtualAddr((size_t)CONSOLE_RX_DATA,0x1,0xf);
     setVirtualAddr((size_t)CONSOLE_TX_DATA,0x1,0xf);
     setVirtualAddr((size_t)CONSOLE_STATUS,0x1,0xf);
     setVirtualAddr(0xc201004,0x1,0xf);
 
-
     Riscv::ms_sstatus(1<<18);
     size_t satp = ((size_t)1 << 63) | ((size_t)mainPMT >> 12);
     __asm__ volatile("csrw satp, %0" : :"r"(satp));
 }
 
+void Riscv::kernelMain()
+{
+    if(kernelMainCalled) return;
+    kernelMainCalled = true;
+
+    initSystem();
+
+    //testOS2();
+
+    enableInterrupts();
+
+    while(!PCB::userPCB->isFinished())
+    {
+        thread_dispatch_kernel();
+    }
+
+    endSystem();
+}
+
 void Riscv::endSystem()
 {
     disableInterrupts();
-    //__asm__ volatile("csrw satp, 0");
     finishSystem = true;
     PCB* pcb = 0;
     while(true)
@@ -189,13 +168,12 @@ void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
     size_t l2 = addr >> 30;
     size_t l1 = (addr >> 21) & (0x1ff);
     size_t l0 = (addr >> 12) & (0x1ff);
-    //size_t offset = addr & 0xfff;
     size_t pmt2Desc = ((size_t*)mainPMT)[l2];
     void* pmt1 = nullptr;
     if(pmt2Desc == 0)
     {
         pmt1 = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
-        for(int i = 0; i < (1 << 9);i++)
+        for(int i = 0; i < NUM_OF_ENTRIES;i++)
         {
             ((size_t*)pmt1)[i] = 0;
         }
@@ -211,7 +189,7 @@ void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
     if(pmt1Desc == 0)
     {
         pmt0 = buddy_alloc((buddyAllocator*)riscvBuddy, 1);
-        for(int i = 0; i < (1 << 9);i++)
+        for(int i = 0; i < NUM_OF_ENTRIES;i++)
         {
             ((size_t*)pmt0)[i] = 0;
         }
@@ -238,6 +216,29 @@ void Riscv::addVirtualAddr(size_t addr)
 void Riscv::addVirtualAddrInstr(size_t addr)
 {
     setVirtualAddr(addr, 0x1, 0xf);
+}
+
+void Riscv::disableTimerInterrupts()
+{
+    uint64 x = 0x2;
+    __asm__ volatile("csrc sie, %0"::"r"(x));
+}
+
+void Riscv::w_a0_sscratch()
+{
+    uint64 a1Temp;
+    __asm__ volatile("mv %0, a1":"=r"(a1Temp));
+    __asm__ volatile("mv a1, %0"::"r"(PCB::running->sscratch));
+    __asm__ volatile("sd a0, 80(a1)");
+    __asm__ volatile("mv a1,%0"::"r"(a1Temp));
+}
+
+void Riscv::changePrivMode()
+{
+    if(PCB::running->systemThread)
+        Riscv::ms_sstatus(Riscv::SSTATUS_SPP);
+    else
+        Riscv::mc_sstatus(Riscv::SSTATUS_SPP);
 }
 
 void Riscv::handleSupervisorTrap()
@@ -352,8 +353,8 @@ void Riscv::handleSupervisorTrap()
                     PCB::threadSleepHandler();
                     break;
                 case PCB::THREAD_DEL_PCB:
-                     PCB::threadDelPCBHandler();
-                     break;
+                    PCB::threadDelPCBHandler();
+                    break;
                 case KSemaphore::SEM_OPEN:
                     KSemaphore::semOpenHandler();
                     break;
@@ -383,47 +384,5 @@ void Riscv::handleSupervisorTrap()
             break;
         }
     }
-}
-
-void Riscv::kernelMain()
-{
-    if(kernelMainCalled) return;
-    kernelMainCalled = true;
-
-    initSystem();
-
-    testOS2();
-
-    //enableInterrupts();
-
-    //while(!PCB::userPCB->isFinished())
-    //{
-    //    thread_dispatch_kernel();
-    //}
-
-    endSystem();
-}
-
-void Riscv::disableTimerInterrupts()
-{
-    uint64 x = 0x2;
-    __asm__ volatile("csrc sie, %0"::"r"(x));
-}
-
-void Riscv::w_a0_sscratch()
-{
-    uint64 a1Temp;
-    __asm__ volatile("mv %0, a1":"=r"(a1Temp));
-    __asm__ volatile("mv a1, %0"::"r"(PCB::running->sscratch));
-    __asm__ volatile("sd a0, 80(a1)");
-    __asm__ volatile("mv a1,%0"::"r"(a1Temp));
-}
-
-void Riscv::changePrivMode()
-{
-    if(PCB::running->systemThread)
-        Riscv::ms_sstatus(Riscv::SSTATUS_SPP);
-    else
-        Riscv::mc_sstatus(Riscv::SSTATUS_SPP);
 }
 

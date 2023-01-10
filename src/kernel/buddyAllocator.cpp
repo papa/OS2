@@ -78,8 +78,6 @@ void split(buddyAllocator* buddy, void* addr, size_t finalLevel, size_t currLeve
 //maybe check if address is aligned to start of block
 void buddy_free(buddyAllocator* buddy, void* addr, size_t numOfBlocks)
 {
-    //KConsole::trapPrintStringInt("Buddy free: ", (size_t)addr,16);
-    //KConsole::trapPrintStringInt("Num of blocks: ", numOfBlocks);
     size_t level = getDeg2Ceil(numOfBlocks);
     addBlocks(buddy, addr, level); //adds free blocks
     buddy->numOfFreeBlocks += (1 << level);

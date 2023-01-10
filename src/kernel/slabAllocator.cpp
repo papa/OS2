@@ -14,10 +14,10 @@
 #define EXPAND_ERROR 0b1
 #define DESTROY_ERROR 0b10
 #define FREE_ERROR 0b100
+#define MAX_NUM_OF_OBJS SLAB_ALLOCATED_LOOKUP*8
 
 //TODO
 //do i need to clear the errors
-
 typedef struct slab_s
 {
     slab_s* prev;
@@ -239,7 +239,8 @@ size_t getOptimalSlabSize(size_t obj_size)
     {
         size_t newSize = bestSize << i;
         size_t newWaste = (newSize - sizeof(slab_t)) % obj_size;
-        if(newWaste < optimalWaste)
+        size_t numOfObjs = (newSize - sizeof(slab_t)) / obj_size;
+        if(newWaste < optimalWaste && numOfObjs <= MAX_NUM_OF_OBJS)
         {
             optimalWaste = newWaste;
             bestSize = newSize;

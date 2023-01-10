@@ -7,7 +7,7 @@
 
 #include "../lib/hw.h"
 
-#define MAX_LEVEL 12
+#define MAX_LEVEL 16
 #define BLOCK_SIZE_POWER_2 12
 typedef char block[4096];
 

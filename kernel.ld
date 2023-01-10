@@ -11,11 +11,11 @@ SECTIONS
 
   .text : {
     *(.entry_os) . = ALIGN(0x1000);
-    PROVIDE(userTextStart = .);
+    PROVIDE(kernelTextStart = .);
     EXCLUDE_FILE(build/src/user/*)
     *(.text .text.*)
     . = ALIGN(0x1000);
-    PROVIDE(etext = .);
+    PROVIDE(kernelDataStart = .);
   }
 
   .rodata : {
@@ -52,10 +52,10 @@ SECTIONS
 
   .kernel : {
     . = ALIGN(0x1000);
-    PROVIDE(kernelTextStart = .);
+    PROVIDE(userTextStart = .);
     *(.text .text.*)
     . = ALIGN(0x1000);
-    PROVIDE(kernelDataStart = .);
+    PROVIDE(userDataStart = .);
     *(.srodata .srodata.*)
     *(.rodata .rodata.*)
     *(.sdata .sdata.*)
