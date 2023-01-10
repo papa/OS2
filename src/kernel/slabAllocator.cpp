@@ -500,6 +500,7 @@ void kfree(const void *objp)
     if(slab != nullptr)
     {
         free_slab_object(slab, objp);
+        destroy_slab_list(&(slab->owner->slabs_empty));
     }
 }
 
