@@ -50,7 +50,7 @@ SECTIONS
     *(.eh_frame .eh_frame.*)
   }
 
-  .kernel : {
+  .user : {
     . = ALIGN(0x1000);
     PROVIDE(userTextStart = .);
     *(.text .text.*)

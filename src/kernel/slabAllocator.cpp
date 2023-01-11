@@ -241,7 +241,7 @@ size_t getOptimalSlabSize(size_t obj_size)
             bestSize = newSize;
         }
     }
-    for(size_t i = lowerConst;i<=highConst;i++)
+    /*for(size_t i = lowerConst;i<=highConst;i++)
     {
         size_t newSize = oldSize + i*BLOCK_SIZE;
         size_t newWaste = (newSize - sizeof(slab_t)) % obj_size;
@@ -251,7 +251,7 @@ size_t getOptimalSlabSize(size_t obj_size)
             optimalWaste = newWaste;
             bestSize = newSize;
         }
-    }
+    }*/
 
     return bestSize / BLOCK_SIZE;
 }
@@ -353,6 +353,39 @@ void printSlabAllocatorInfo()
     }
     KConsole::trapPrintString("\n\n\n\n\n\n\n\n\n");
     printBuddyInfo();
+}
+
+void shrink_caches_on_slab(slab_t* slab)
+{
+    for(size_t i = 0; i < slab->numOfObjects;i++)
+    {
+        if(checkSetIndex(slab, i))
+        {
+            void* addr = (void*)((size_t)slab + sizeof(slab) + i*slab->owner->obj_size);
+            kmem_cache_shrink((kmem_cache_t*)addr);
+        }
+    }
+}
+
+void shrink_all_caches()
+{
+    kmem_cache_t* cacheOfCaches = &slabAllocator->cacheOfCaches;
+
+    slab_t* slab = cacheOfCaches->slabs_full;
+    while(slab != nullptr)
+    {
+        shrink_caches_on_slab(slab);
+        slab = slab->next;
+    }
+
+    slab = cacheOfCaches->slabs_partial;
+    while(slab != nullptr)
+    {
+        shrink_caches_on_slab(slab);
+        slab = slab->next;
+    }
+
+    kmem_cache_shrink(cacheOfCaches);
 }
 
 //slab allocator public interface-----------------------------------------------------------------------------
