@@ -104,7 +104,7 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    //testOS2();
+    //testKmalloc();
 
     enableInterrupts();
 

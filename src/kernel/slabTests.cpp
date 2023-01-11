@@ -28,6 +28,33 @@ void slabCacheCreateTest2()
     kmem_cache_destroy(cache);
     printSlabAllocatorInfo();
 }
+
+void testKmalloc()
+{
+    void** x = (void**)kmalloc(sizeof(void*)*200);
+    int indeks = 0;
+    for(int i = 0;i < 10;i++)
+    {
+        for(int j = 5;j<=18;j++)
+        {
+            void* adr = kmalloc(1 << j);
+            x[indeks++] = adr;
+            if(adr == nullptr)
+            {
+                KConsole::trapPrintString("Nullptr je\n");
+                KConsole::trapPrintStringInt("i ", i);
+                KConsole::trapPrintStringInt("j ", j);
+            }
+        }
+    }
+    for(int i = 0; i < indeks;i++)
+    {
+        kfree(x[i]);
+    }
+    printSlabAllocatorInfo();
+}
+
+
 //-----------------------------------------------------------------------------------------------------------------------
 //OS2 testovi
 
