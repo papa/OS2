@@ -49,7 +49,7 @@ void testKmalloc()
     }
     for(int i = 0; i < indeks;i++)
     {
-        kfree(x[i]);
+      kfree(x[i]);
     }
     printSlabAllocatorInfo();
 }
