@@ -395,24 +395,52 @@ void* bigCacheKmalloc(kmem_cache_t* cachep)
 {
     if(cachep == nullptr)
         return nullptr;
-    slab_t* slab = (slab_t*)kmem_cache_alloc(cacheOfSlabs);
-    if(slab == nullptr)
+
+    if(cachep->slabs_partial != nullptr)
     {
-        return nullptr;
+        void* allocatedAddr = allocateObject(cachep->slabs_partial);
+        if(full(cachep->slabs_partial))
+            putPartialToFull(cachep);
+        return allocatedAddr;
     }
-    slab->owner = cachep;
-    slab->numOfObjects = 1;
-    slab->numOfAllocatedObjects = 1;
-    slab->allocated[0] = 0;
-    void* addr = buddy_alloc(cachep->obj_size / BLOCK_SIZE);
-    if(addr == nullptr)
+    else if(cachep->slabs_empty != nullptr)
     {
-        kmem_cache_free(cacheOfSlabs, slab);
-        return nullptr;
+        void* allocatedAddr = allocateObject(cachep->slabs_empty);
+        if(!empty(cachep->slabs_empty))
+        {
+            putEmptyToPartial(cachep);
+            if(full(cachep->slabs_partial))
+                putPartialToFull(cachep);
+        }
+        return allocatedAddr;
     }
-    slab->startAddr = addr;
-    insertIntoSlabList(slab, &cachep->slabs_full);
-    return addr;
+    else
+    {
+        slab_t* slab = (slab_t*)kmem_cache_alloc(cacheOfSlabs);
+        if(slab == nullptr) // potencijalni EXPAND ERROR
+            return nullptr;
+        slab->owner = cachep;
+        slab->numOfObjects = 2;
+        slab->numOfAllocatedObjects = 0;
+        slab->allocated[0] = 0;
+        void* addr = buddy_alloc(2*(cachep->obj_size / BLOCK_SIZE));
+        if(addr == nullptr)
+        {
+            kmem_cache_free(cacheOfSlabs, slab);
+            return nullptr;
+        }
+        slab->startAddr = addr;
+        insertIntoSlabList(slab, &cachep->slabs_empty);
+        void* allocatedAddr = allocateObject(cachep->slabs_empty);
+        if(!empty(cachep->slabs_empty))
+        {
+            putEmptyToPartial(cachep);
+            if(full(cachep->slabs_partial))
+                putPartialToFull(cachep);
+        }
+        return allocatedAddr;
+    }
+    return nullptr;
 }
 
 void big_kfree(slab_t* slab, const void* objp)
@@ -420,11 +448,22 @@ void big_kfree(slab_t* slab, const void* objp)
     if(slab == nullptr || objp == nullptr)
         return;
     kmem_cache_t* cachep = slab->owner;
-    buddy_free((void*)objp, cachep->obj_size / BLOCK_SIZE);
-    removeFullSlab(cachep, slab);
-    removePartialSlab(cachep, slab);
-    cachep->slabs_empty = nullptr;
-    kmem_cache_free(cacheOfSlabs, slab);
+//    if(objp != slab->startAddr)
+//        return;
+    free_slab_object(slab, objp);
+    slab_t* slabE = cachep->slabs_empty;
+    while(slabE != nullptr)
+    {
+        slab_t* old = slabE;
+        slabE = cachep->slabs_empty = slabE->next;
+        buddy_free((void*)old->startAddr, 2*(cachep->obj_size / BLOCK_SIZE));
+        kmem_cache_free(cacheOfSlabs, old);
+    }
+//    buddy_free((void*)objp, cachep->obj_size / BLOCK_SIZE);
+//    removeFullSlab(cachep, slab);
+//    removePartialSlab(cachep, slab);
+//    cachep->slabs_empty = nullptr;
+//    kmem_cache_free(cacheOfSlabs, slab);
 }
 
 //slab allocator public interface-----------------------------------------------------------------------------
@@ -558,7 +597,7 @@ void *kmalloc(size_t size)
             slabAllocator->cachesBuffers[index] = (kmem_cache_t*)kmem_cache_alloc(&slabAllocator->cacheOfCaches);
             if(slabAllocator->cachesBuffers[index] == nullptr)
                 return nullptr;
-            init_cache(slabAllocator->cachesBuffers[index], "Cache for small buffers", 1, size, nullptr,nullptr);
+            init_cache(slabAllocator->cachesBuffers[index], "Cache for small buffers", 2*(size / BLOCK_SIZE), size, nullptr,nullptr);
         }
 
         return bigCacheKmalloc(slabAllocator->cachesBuffers[index]);

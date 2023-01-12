@@ -104,14 +104,14 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    //testKmalloc();
+    testOS2();
 
-    enableInterrupts();
-
-    while(!PCB::userPCB->isFinished())
-    {
-        thread_dispatch_kernel();
-    }
+//    enableInterrupts();
+//
+//    while(!PCB::userPCB->isFinished())
+//    {
+//        thread_dispatch_kernel();
+//    }
 
     endSystem();
 }
