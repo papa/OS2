@@ -54,6 +54,25 @@ void testKmalloc()
     printSlabAllocatorInfo();
 }
 
+void testKmalloc2()
+{
+    bool flag = false;
+    for(int i = 0;!flag;i++)
+    {
+        for(int j = 5;j<=17;j++)
+        {
+            void* adr = kmalloc(1 << j);
+            if(adr == nullptr)
+            {
+                KConsole::trapPrintString("Nullptr je\n");
+                KConsole::trapPrintStringInt("i ", i);
+                KConsole::trapPrintStringInt("j ", j);
+                flag = true;
+                break;
+            }
+        }
+    }
+}
 
 //-----------------------------------------------------------------------------------------------------------------------
 //OS2 testovi

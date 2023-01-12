@@ -8,4 +8,5 @@ void slabCacheCreateTest();
 void slabCacheCreateTest2();
 void testOS2();
 void testKmalloc();
+void testKmalloc2();
 #endif
