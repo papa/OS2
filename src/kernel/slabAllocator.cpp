@@ -2,8 +2,6 @@
 #include "../../h/buddyAllocator.hpp"
 #include "../../h/KConsole.hpp"
 
-//TODO
-//check values of the constants
 #define SLAB_ALLOCATED_LOOKUP 512
 #define CACHE_NAME_SIZE 64
 #define CACHE_BUFFER_SMALL 5
@@ -49,6 +47,7 @@ typedef struct slab_allocator_s
 //singleton slab allocator
 static slab_allocator_t* slabAllocator = nullptr;
 static kmem_cache_t* cacheOfSlabs = nullptr;
+
 //helping functions
 void strcpy(const char* src, char* dst)
 {
@@ -210,7 +209,7 @@ void allocateSlab(kmem_cache_t* cachep)
     newSlab->numOfAllocatedObjects = 0;
     newSlab->owner = cachep;
     size_t sizeInBytes = cachep->slab_size*BLOCK_SIZE;
-    newSlab->numOfObjects = (sizeInBytes - sizeof(slab_t)) / cachep->obj_size; // TODO can this param be in cache ?
+    newSlab->numOfObjects = (sizeInBytes - sizeof(slab_t)) / cachep->obj_size;
     newSlab->startAddr = (void*)((size_t)newSlab + sizeof(slab_t));
     for(size_t i = 0; i < (newSlab->numOfObjects + 7) / 8;i++)
         newSlab->allocated[i] = 0;
@@ -243,17 +242,6 @@ size_t getOptimalSlabSize(size_t obj_size)
             bestSize = newSize;
         }
     }
-    /*for(size_t i = lowerConst;i<=highConst;i++)
-    {
-        size_t newSize = oldSize + i*BLOCK_SIZE;
-        size_t newWaste = (newSize - sizeof(slab_t)) % obj_size;
-        size_t numOfObjs = (newSize - sizeof(slab_t)) / obj_size;
-        if(newWaste < optimalWaste && numOfObjs <= MAX_NUM_OF_OBJS)
-        {
-            optimalWaste = newWaste;
-            bestSize = newSize;
-        }
-    }*/
 
     return bestSize / BLOCK_SIZE;
 }
@@ -417,7 +405,7 @@ void* bigCacheKmalloc(kmem_cache_t* cachep)
     else
     {
         slab_t* slab = (slab_t*)kmem_cache_alloc(cacheOfSlabs);
-        if(slab == nullptr) // potencijalni EXPAND ERROR
+        if(slab == nullptr)
             return nullptr;
         slab->owner = cachep;
         if(cachep->obj_size >= BLOCK_SIZE)
@@ -452,8 +440,6 @@ void big_kfree(slab_t* slab, const void* objp)
     if(slab == nullptr || objp == nullptr)
         return;
     kmem_cache_t* cachep = slab->owner;
-//    if(objp != slab->startAddr)
-//        return;
     free_slab_object(slab, objp);
     slab_t* slabE = cachep->slabs_empty;
     while(slabE != nullptr)
@@ -463,6 +449,8 @@ void big_kfree(slab_t* slab, const void* objp)
         buddy_free((void*)old->startAddr, cachep->slab_size);
         kmem_cache_free(cacheOfSlabs, old);
     }
+//    if(objp != slab->startAddr)
+//        return;
 //    buddy_free((void*)objp, cachep->obj_size / BLOCK_SIZE);
 //    removeFullSlab(cachep, slab);
 //    removePartialSlab(cachep, slab);
@@ -542,7 +530,6 @@ void kmem_cache_free(kmem_cache_t *cachep, void *objp)
     free_slab_object(slab, objp);
 }
 
-//TODO what needs to be printed
 void kmem_cache_info(kmem_cache_t *cachep)
 {
     if(cachep == nullptr)
@@ -618,7 +605,6 @@ void *kmalloc(size_t size)
         return bigCacheKmalloc(slabAllocator->cachesBuffers[index]);
     }
     return nullptr;
-    //return kmem_cache_alloc(slabAllocator->cachesBuffers[index]);
 }
 
 void kfree(const void *objp)
@@ -626,27 +612,15 @@ void kfree(const void *objp)
     if(objp == nullptr)
         return;
     slab_t* slab = nullptr;
-    //int index = -1;
     for(size_t i = 0;i < CACHE_BUFFER_SIZE;i++)
     {
         slab = findSlab(slabAllocator->cachesBuffers[i], objp);
         if(slab != nullptr)
         {
-            //index = i;
             break;
         }
     }
-    /*static size_t border = 12;
-    size_t level = index + CACHE_BUFFER_SMALL;
-    if(slab != nullptr && level < border)
-    {
-        free_slab_object(slab, objp);
-        destroy_slab_list(&(slab->owner->slabs_empty));
-    }
-    else if(slab != nullptr && level >= border)
-    {
-        big_kfree(slab, objp);
-    }*/
+
     if(slab != nullptr)
     {
         big_kfree(slab, objp);

@@ -105,13 +105,11 @@ void KSemaphore::unblock() {
 }
 void *KSemaphore::operator new(size_t size) {
     return kmem_cache_alloc(Riscv::semaphoreCache);
-    //return MemoryAllocator::kmalloc(size);
 }
 
 void KSemaphore::operator delete(void *p)
 {
     kmem_cache_free(Riscv::semaphoreCache, p);
-    //MemoryAllocator::kfree(p);
 }
 
 void KSemaphore::semWaitHandler()

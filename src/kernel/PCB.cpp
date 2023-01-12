@@ -60,12 +60,10 @@ void PCB::dispatch()
 
 void *PCB::operator new(size_t size) {
     return kmem_cache_alloc(Riscv::pcbCache);
-    //return MemoryAllocator::kmalloc(size);
 }
 
 void PCB::operator delete(void *p) {
     kmem_cache_free(Riscv::pcbCache, p);
-    //MemoryAllocator::kfree(p);
 }
 
 PCB::~PCB()
@@ -81,12 +79,10 @@ void PCB::initialize()
     PCB::running->setState(PCB::RUNNING);
     PCB::consolePCB = new PCB(&KConsole::sendCharactersToConsole, 0,
                               kmalloc(DEFAULT_STACK_SIZE),
-//                              MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
                               DEFAULT_TIME_SLICE);
     PCB::consolePCB->systemThread = true;
     PCB::consolePCB->start();
     PCB::userPCB = new PCB(&PCBWrapperUser::userMainWrapper, 0,
-//                           kmalloc(DEFAULT_STACK_SIZE),
                            MemoryAllocator::kmalloc(DEFAULT_STACK_SIZE),
                            DEFAULT_TIME_SLICE);
     PCB::userPCB->start();
@@ -177,7 +173,6 @@ void PCB::threadMakePCBHandler()
     __asm__ volatile("mv %0, a3" : "=r"(args));
 
     PCB *newPCB = new PCB((void (*)(void *)) start_routine, (void *) args,
-                          //stack_space,
                           (void *) PCB::savedRegA4,
                           DEFAULT_TIME_SLICE);
 

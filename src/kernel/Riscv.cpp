@@ -33,15 +33,6 @@ extern char *userDataStart;
 extern char *kernelTextStart;
 extern char *kernelDataStart;
 
-void Riscv::initVirtualMemory()
-{
-    //size_t addr = (size_t)getNextBlockAddr((size_t)HEAP_START_ADDR);
-
-    //size_t pmtSize = (1 << 9);
-    //size_t descSize = 64;
-    //size_t
-}
-
 void Riscv::setVirtualAddrRange(size_t startAddr, size_t endAddr, int permission)
 {
     for(size_t i = startAddr; i < endAddr; i+=BLOCK_NUM_OF_BYTES)
@@ -104,14 +95,14 @@ void Riscv::kernelMain()
 
     initSystem();
 
-    testOS2();
+//    testKmalloc2();
 
-//    enableInterrupts();
-//
-//    while(!PCB::userPCB->isFinished())
-//    {
-//        thread_dispatch_kernel();
-//    }
+    enableInterrupts();
+
+    while(!PCB::userPCB->isFinished())
+    {
+        thread_dispatch_kernel();
+    }
 
     endSystem();
 }
@@ -204,16 +195,6 @@ void Riscv::setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf)
     {
         ((size_t*)pmt0)[l0] = ((addr >> 12) << 10) | maskLeaf;
     }
-}
-
-void Riscv::addVirtualAddr(size_t addr)
-{
-    setVirtualAddr(addr, 0x1, 0xf);
-}
-
-void Riscv::addVirtualAddrInstr(size_t addr)
-{
-    setVirtualAddr(addr, 0x1, 0xf);
 }
 
 void Riscv::disableTimerInterrupts()

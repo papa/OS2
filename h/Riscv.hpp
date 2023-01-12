@@ -19,11 +19,7 @@ private:
 
     static void* mainPMT;
 
-    static void addVirtualAddr(size_t addr);
-    static void addVirtualAddrInstr(size_t addr);
     static void setVirtualAddr(size_t addr, size_t mask, size_t maskLeaf);
-
-    static void initVirtualMemory();
 
     static void setVirtualAddrRange(size_t startAddr, size_t endAddr, int permission);
 
